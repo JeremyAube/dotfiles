@@ -1,0 +1,7 @@
+# ignore everything
+/*
+
+**/.DS_Store
+
+!.gitignore
+!/nvim/
