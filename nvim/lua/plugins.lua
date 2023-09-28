@@ -43,21 +43,7 @@ require("lazy").setup({
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons", opt = true },
 	},
-	{
-		"rebelot/kanagawa.nvim",
-		opts = {
-			compile = true,
-			colors = {
-				theme = {
-					all = {
-						ui = {
-							bg_gutter = "none",
-						},
-					},
-				},
-			},
-		},
-	},
+	{ "rebelot/kanagawa.nvim" },
 	{
 		"nvim-telescope/telescope.nvim",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -81,3 +67,4 @@ require("plugin_config.lualine")
 require("plugin_config.lsp-zero")
 require("plugin_config.telescope")
 require("plugin_config.treesitter")
+require("plugin_config.colorscheme")
