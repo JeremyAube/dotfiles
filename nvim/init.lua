@@ -3,6 +3,7 @@ require("plugins")
 
 vim.opt.termguicolors = true
 vim.cmd("colorscheme kanagawa")
+vim.wo.number = true
 vim.wo.relativenumber = true
 vim.wo.colorcolumn = "100"
 vim.wo.wrap = false
