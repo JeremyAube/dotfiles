@@ -66,6 +66,7 @@ require("lazy").setup({
 })
 
 require("plugin_config.lualine")
+require("plugin_config.nvim-ts-autotag")
 require("plugin_config.lsp-zero")
 require("plugin_config.telescope")
 require("plugin_config.treesitter")
