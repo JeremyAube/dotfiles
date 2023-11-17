@@ -57,12 +57,10 @@ require("lazy").setup({
 	"tpope/vim-surround",
 	"tpope/vim-commentary",
 	"tpope/vim-endwise",
-	"mattn/emmet-vim",
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb",
 	"windwp/nvim-ts-autotag",
 	"mg979/vim-visual-multi",
-	"gcmt/wildfire.vim",
 })
 
 require("plugin_config.lualine")
