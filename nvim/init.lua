@@ -1,5 +1,5 @@
-require("keybinds")
-require("plugins")
+require("jeremyaube.keybinds")
+require("jeremyaube.lazy")
 
 vim.opt.termguicolors = true
 vim.cmd("colorscheme kanagawa")
