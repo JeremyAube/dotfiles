@@ -59,6 +59,7 @@ require("lazy").setup({
 	"tpope/vim-endwise",
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb",
+	"lewis6991/gitsigns.nvim",
 	"windwp/nvim-ts-autotag",
 	"mg979/vim-visual-multi",
 })
