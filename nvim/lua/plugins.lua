@@ -53,6 +53,7 @@ require("lazy").setup({
 		event = "InsertEnter",
 		opts = {},
 	},
+	"rebelot/kanagawa.nvim",
 	"nvim-treesitter/nvim-treesitter",
 	"tpope/vim-surround",
 	"tpope/vim-commentary",
