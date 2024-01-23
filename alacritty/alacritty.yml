@@ -1,3 +1,7 @@
+window:
+  decorations: Transparent
+  padding:
+    y: 26
 font:
   size: 18
   normal:
