@@ -16,5 +16,5 @@ return {
         "htmldjango",
       },
     })
-  end
+  end,
 }

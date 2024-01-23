@@ -6,6 +6,7 @@ return {
 		keywordStyle = { italic = false },
 		statementStyle = { bold = true },
 		typeStyle = { italic = true },
+		transparent = true,
 		colors = {
 			theme = {
 				all = {

@@ -4,8 +4,8 @@ return {
 	config = function()
 		local builtin = require("telescope.builtin")
 
-		vim.keymap.set("n", "<leader>o", builtin.git_files)
-		vim.keymap.set("n", "<leader>O", builtin.find_files)
+		vim.keymap.set("n", "<leader>O", builtin.git_files)
+		vim.keymap.set("n", "<leader>o", builtin.find_files)
 		vim.keymap.set("n", "<leader>fh", builtin.current_buffer_fuzzy_find)
 		vim.keymap.set("n", "<leader>b", builtin.buffers, {})
 		vim.keymap.set("n", "<leader>fl", builtin.git_commits)

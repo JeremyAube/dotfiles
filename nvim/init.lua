@@ -6,10 +6,12 @@ vim.wo.number = true
 vim.wo.relativenumber = true
 vim.wo.colorcolumn = "100"
 vim.wo.wrap = false
+vim.o.timeoutlen = 2000
 
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.wo.signcolumn = "yes"
+vim.opt.hlsearch = false
 vim.o.completeopt = "menuone,noselect"
 local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -30,3 +32,8 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
+
+vim.cmd("highlight Normal guibg=none")
+vim.cmd("highlight NonText guibg=none")
+vim.cmd("highlight Normal ctermbg=none")
+vim.cmd("highlight NonText ctermbg=none")

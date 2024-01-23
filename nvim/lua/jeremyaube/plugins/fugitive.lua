@@ -10,5 +10,9 @@ return {
 		vim.keymap.set("n", "<leader>gb", ":Git blame<cr>")
 		vim.keymap.set("n", "<leader>gd", ":Gvdiffsplit<cr>")
 		vim.keymap.set("n", "<leader>gi", ":GBrowse<cr>")
+
+		vim.keymap.set("n", "<leader>gm", ":Gvdiffsplit!<cr>")
+		vim.keymap.set("n", "<leader>gh", ":diffget //2<cr>")
+		vim.keymap.set("n", "<leader>gl", ":diffget //3<cr>")
 	end,
 }
