@@ -6,12 +6,12 @@ return {
 
 		vim.keymap.set("n", "<leader>O", builtin.git_files)
 		vim.keymap.set("n", "<leader>o", builtin.find_files)
-		vim.keymap.set("n", "<leader>fh", builtin.current_buffer_fuzzy_find)
 		vim.keymap.set("n", "<leader>b", builtin.buffers, {})
-		vim.keymap.set("n", "<leader>fl", builtin.git_commits)
-		vim.keymap.set("n", "<leader>fb", builtin.git_branches)
-		vim.keymap.set("n", "<leader>fs", function()
-			builtin.grep_string({ search = vim.fn.input("Grep > ") })
-		end)
+		vim.keymap.set("n", "<leader>ff", builtin.current_buffer_fuzzy_find)
+		vim.keymap.set("n", "<leader>fs", builtin.live_grep)
+
+		-- Git
+		vim.keymap.set("n", "<leader>gh", builtin.git_commits)
+		vim.keymap.set("n", "<leader>gs", builtin.git_branches)
 	end,
 }
