@@ -1,0 +1,30 @@
+format = '''
+$character$directory\[$git_branch$git_status$git_state\]
+[\$](orange) '''
+
+[directory]
+style = 'blue'
+truncation_length = 1
+
+[character]
+success_symbol = ' '
+error_symbol = ' '
+vimcmd_symbol = '📝'
+format = '[$symbol]($style)'
+
+[git_branch]
+format = '[$branch]($style)'
+style = 'bright-black'
+
+[git_status]
+format = '[[($conflicted$untracked$modified$staged$deleted)](218)]($style)'
+style = 'cyan'
+conflicted = '[✘{count}](bold red)'
+untracked = '[?${count}](bold)}]'
+modified = '[!${count}](bold yellow)'
+staged = '[+${count}](bold green)'
+deleted = '[*${count}](bold red)'
+
+[git_state]
+style = 'bright-black'
+

@@ -6,4 +6,5 @@
 !.gitignore
 !/nvim/
 !/alacritty/
+!starship.toml
 !/keyboard/
