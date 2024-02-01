@@ -9,7 +9,7 @@ truncation_length = 1
 [character]
 success_symbol = ' '
 error_symbol = ' '
-vimcmd_symbol = '📝'
+vimcmd_symbol = ' '
 format = '[$symbol]($style)'
 
 [git_branch]
@@ -19,11 +19,11 @@ style = 'bright-black'
 [git_status]
 format = '[[($conflicted$untracked$modified$staged$deleted)](218)]($style)'
 style = 'cyan'
-conflicted = '[✘{count}](bold red)'
-untracked = '[?${count}](bold)}]'
+conflicted = '[✘${count}](bold red)'
+untracked = '[?${count}](bold blue)'
 modified = '[!${count}](bold yellow)'
 staged = '[+${count}](bold green)'
-deleted = '[*${count}](bold red)'
+deleted = '[-${count}](bold red)'
 
 [git_state]
 style = 'bright-black'
