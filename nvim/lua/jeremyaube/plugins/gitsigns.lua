@@ -13,6 +13,9 @@ return {
 			map("n", "<leader>gw", function()
 				gs.blame_line({ full = true })
 			end)
+			map("n", "<leader>gp", function()
+				gs.preview_hunk_inline()
+			end)
 		end,
 	},
 }

@@ -4,7 +4,6 @@ require("jeremyaube.lazy")
 vim.opt.termguicolors = true
 vim.wo.number = true
 vim.wo.relativenumber = true
-vim.wo.colorcolumn = "100"
 vim.wo.wrap = false
 vim.o.timeoutlen = 2000
 
