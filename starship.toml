@@ -1,5 +1,5 @@
 format = '''
-$character$directory\[$git_branch$git_status$git_state\]
+$character$directory$git_branch$git_status$git_state
 [\$](orange) '''
 
 [directory]
@@ -13,7 +13,7 @@ vimcmd_symbol = ' '
 format = '[$symbol]($style)'
 
 [git_branch]
-format = '[$branch]($style)'
+format = '[󰊢 ](bold red)[$branch]($style)'
 style = 'bright-black'
 
 [git_status]
