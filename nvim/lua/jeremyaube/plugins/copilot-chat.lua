@@ -30,7 +30,7 @@ return {
 			},
 			CommitStaged = {
 				prompt = "Write commit message for the change with commitizen convention. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.",
-				mapping = "<leader>id",
+				mapping = "<leader>ic",
 				selection = function(source)
 					return require("CopilotChat.select").gitdiff(source, true)
 				end,
@@ -66,7 +66,6 @@ return {
 	end,
 	event = "VeryLazy",
 	keys = {
-		{ "<leader>ic", ":CopilotChat " },
 		{ "<leader>io", ":CopilotChatToggle<CR>" },
 	},
 }
