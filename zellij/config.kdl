@@ -83,6 +83,7 @@ keybinds clear-defaults=true {
 
     shared_except "Locked" {
         bind "Esc" { SwitchToMode "Locked"; }
+        bind "Enter" { SwitchToMode "Locked"; }
     }
 }
 
