@@ -4,15 +4,15 @@ live_config_reload = true
 size = 20
 
 [font.bold]
-family = "JetBrainsMono Nerd Font"
+family = "Iosevka Nerd Font"
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font"
-style = "Italic"
+family = "Iosevka Nerd Font"
+style = "Oblique"
 
 [font.normal]
-family = "JetBrainsMono Nerd Font"
+family = "Iosevka Nerd Font"
 style = "Regular"
 
 [window]
