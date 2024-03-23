@@ -11,11 +11,11 @@ return {
 		{ "hrsh7th/nvim-cmp" },
 		{ "hrsh7th/cmp-nvim-lsp" },
 		{ "L3MON4D3/LuaSnip" },
-	},
 
+		{ "onsails/lspkind.nvim" },
+	},
 	config = function()
 		local lsp = require("lsp-zero").preset({})
-
 		lsp.on_attach(function(_, bufnr)
 			lsp.default_keymaps({ buffer = bufnr })
 			lsp.buffer_autoformat()
@@ -34,12 +34,19 @@ return {
 			},
 		})
 
+		local lspkind = require("lspkind")
 		local cmp = require("cmp")
-
 		cmp.setup({
-			mapping = cmp.mapping.preset.insert({
-				["<C-Space>"] = cmp.mapping.complete(),
-			}),
+			formatting = {
+				format = lspkind.cmp_format(),
+			},
+		})
+
+		cmp.setup.cmdline({ "/", "?" }, {
+			mapping = cmp.mapping.preset.cmdline(),
+			sources = {
+				{ name = "buffer" },
+			},
 		})
 
 		require("lspconfig.ui.windows").default_options.border = "single"
@@ -50,6 +57,7 @@ return {
 			signs = true,
 			update_in_insert = false,
 			severity_sort = true,
+
 			float = {
 				source = "always",
 				style = "minimal",

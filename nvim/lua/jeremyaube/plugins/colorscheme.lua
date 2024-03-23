@@ -20,6 +20,7 @@ return {
 					},
 				},
 			},
+
 			overrides = function(colors) -- add/modify highlights
 				local theme = colors.theme
 

@@ -48,15 +48,6 @@ return {
 			-- footer = nil, -- footer of chat window
 			zindex = 1, -- determines if window is on top or below other floating windows
 		},
-		-- default mappings
-		mappings = {
-			close = "q",
-			reset = "<C-l>",
-			complete = "<Tab>",
-			submit_prompt = "<CR>",
-			accept_diff = "<C-y>",
-			show_diff = "<C-t>",
-		},
 	},
 	build = function()
 		vim.defer_fn(function()
