@@ -5,7 +5,7 @@
 
 !.gitignore
 !/nvim/
-!/alacritty/
+!/wezterm/
 !starship.toml
 !/keyboard/
 !/zellij/
