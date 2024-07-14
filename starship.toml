@@ -1,5 +1,5 @@
 format = '''
-$character$directory$git_branch$git_status$git_state
+$character$directory$git_branch$git_status$git_state $python
 [\$](orange) '''
 
 [directory]
@@ -28,3 +28,5 @@ deleted = '[-${count}](bold red)'
 [git_state]
 style = 'bright-black'
 
+[python]
+python_binary = 'python3'
