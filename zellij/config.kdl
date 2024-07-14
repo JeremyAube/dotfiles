@@ -34,9 +34,9 @@ keybinds clear-defaults=true {
     }
 
     tmux {
-        bind "e" { EditScrollback; SwitchToMode "Locked"; }
         bind "m" { SwitchToMode "Move"; }
         bind "r" { SwitchToMode "Resize"; }
+        bind "e" { EditScrollback; SwitchToMode "Locked"; }
 
         // Pane Keybinds
         bind "Ctrl h" { MoveFocus "Left"; }
@@ -55,8 +55,8 @@ keybinds clear-defaults=true {
         bind "l" { GoToNextTab; }
         bind "j" { ToggleTab; }
         bind "." { NewTab; SwitchToMode "Locked"; }
-        bind "X" { CloseTab; SwitchToMode "Locked"; }
         bind "," { SwitchToMode "RenameTab"; TabNameInput 0; }
+        bind "X" { CloseTab; SwitchToMode "Locked"; }
         bind "b" { BreakPane; SwitchToMode "Locked"; }
 
         bind "1" { GoToTab 1; SwitchToMode "Locked"; }
@@ -74,14 +74,16 @@ keybinds clear-defaults=true {
         bind "Ctrl q" { Quit; }
         bind "Ctrl o" {
             LaunchOrFocusPlugin "zellij:session-manager" {
-                floating true
-                move_to_focused_tab true
+                floating false
+                move_to_focused_tab false
             };
             SwitchToMode "Locked";
         }
     }
 
     shared_except "Locked" {
+        bind "Ctrl b" { SwitchToMode "Tmux"; }
+
         bind "Esc" { SwitchToMode "Locked"; }
         bind "Enter" { SwitchToMode "Locked"; }
     }
@@ -93,9 +95,10 @@ plugins {
     strider { path "strider"; }
     compact-bar { path "compact-bar"; }
     session-manager { path "session-manager"; }
+    zjstatus { path "file:~/.config/zellij/plugins/zjstatus.wasm"; }
 }
 
-copy_on_select true
+copy_on_select false
 mouse_mode true
 simplified_ui true
 pane_frames false
@@ -104,21 +107,21 @@ default_editor "nvim"
 scrollback_editor "/opt/homebrew/bin/nvim"
 
 themes {
-    kanagawa {
-        fg "#DCD7BA"
-        bg "#1F1F28"
-        red "#C34043"
-        green "#76946A"
-        yellow "#FF9E3B"
-        blue "#7E9CD8"
-        magenta "#957FB8"
-        orange "#FFA066"
-        cyan "#7FB4CA"
-        black "#16161D"
-        white "#DCD7BA"
+    tokyonight_moon {
+        fg "#c8d3f5"
+        bg "#2f334d"
+        black "#1b1d2b"
+        red "#ff757f"
+        green "#c3e88d"
+        yellow "#ffc777"
+        blue "#82aaff"
+        magenta "#c099ff"
+        cyan "#86e1fc"
+        white "#828bb8"
+        orange "#ff966c"
     }
 }
 
-theme "kanagawa"
+theme "tokyonight_moon"
 
 default_mode "locked"
