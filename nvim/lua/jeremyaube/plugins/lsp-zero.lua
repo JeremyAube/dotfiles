@@ -10,46 +10,81 @@ return {
 		-- Autocompletion
 		{ "hrsh7th/nvim-cmp" },
 		{ "hrsh7th/cmp-nvim-lsp" },
-		{ "L3MON4D3/LuaSnip" },
+		{ "hrsh7th/cmp-nvim-lua" },
 
+		-- Completion Icons
 		{ "onsails/lspkind.nvim" },
 	},
 	config = function()
+		-- LSP Setup
+		-- ============================================================
 		local lsp = require("lsp-zero").preset({})
 		lsp.on_attach(function(_, bufnr)
 			lsp.default_keymaps({ buffer = bufnr })
 			lsp.buffer_autoformat()
 
 			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", { buffer = bufnr })
+			vim.keymap.set("n", "gc", "<cmd>Telescope lsp_incoming_calls<cr>", { buffer = bufnr })
 		end)
+		lsp.setup()
 
-		require("lspconfig").lua_ls.setup({
+		local lspconfig = require("lspconfig")
+		lspconfig.lua_ls.setup({
 			settings = {
 				Lua = {
 					diagnostics = {
-						-- Get the language server to recognize the `vim` global
 						globals = { "vim" },
 					},
 				},
 			},
 		})
 
+		lspconfig.html.setup({
+			filetypes = { "html", "heex" },
+		})
+
+		lspconfig.tailwindcss.setup({
+			settings = {
+				tailwindCSS = {
+					includeLanguages = {
+						elixir = "html-eex",
+						eelixir = "html-eex",
+						heex = "html-eex",
+					},
+					experimental = {
+						classRegex = {
+							'class[:]\\s*"([^"]*)"',
+						},
+					},
+				},
+			},
+		})
+
+		-- Nvim CMP
+		-- ============================================================
 		local lspkind = require("lspkind")
 		local cmp = require("cmp")
 		cmp.setup({
-			formatting = {
-				format = lspkind.cmp_format(),
-			},
-		})
-
-		cmp.setup.cmdline({ "/", "?" }, {
-			mapping = cmp.mapping.preset.cmdline(),
 			sources = {
+				{ name = "nvim_lua" },
+				{ name = "nvim_lsp" },
+				{ name = "path" },
 				{ name = "buffer" },
 			},
+			window = {
+				completion = cmp.config.window.bordered(),
+			},
+			formatting = {
+				fields = { "abbr", "kind" },
+				format = lspkind.cmp_format({
+					mode = "symbol_text",
+					preset = "codicons",
+				}),
+			},
 		})
 
-		require("lspconfig.ui.windows").default_options.border = "single"
+		-- LSP Diagnostics
+		-- ============================================================
 		vim.diagnostic.config({
 			title = false,
 			underline = true,
@@ -66,7 +101,6 @@ return {
 				prefix = "",
 			},
 		})
-
 		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
 		for type, icon in pairs(signs) do
 			local hl = "DiagnosticSign" .. type
@@ -74,8 +108,12 @@ return {
 		end
 
 		-- Format on save
-		vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
-
-		lsp.setup()
+		-- ============================================================
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = vim.fn.bufnr(),
+			callback = function()
+				vim.lsp.buf.format({ timeout_ms = 1000 })
+			end,
+		})
 	end,
 }

@@ -15,7 +15,6 @@ return {
 				border = "rounded",
 			},
 		})
-
-		vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open file explorer" })
+		vim.keymap.set("n", "-", vim.cmd.Oil, { desc = "Open file explorer" })
 	end,
 }

@@ -13,7 +13,10 @@ return {
 				sorting_strategy = "ascending",
 				mappings = {
 					i = {
-						["<esc>"] = require("telescope.actions").close,
+						["<C-q>"] = require("telescope.actions").smart_send_to_qflist,
+					},
+					n = {
+						["<C-q>"] = require("telescope.actions").smart_send_to_qflist,
 					},
 				},
 			},
@@ -22,8 +25,9 @@ return {
 		vim.keymap.set("n", "<leader>O", builtin.git_files)
 		vim.keymap.set("n", "<leader>o", builtin.find_files)
 		vim.keymap.set("n", "<leader>b", builtin.buffers, {})
-		vim.keymap.set("n", "<leader>ff", builtin.current_buffer_fuzzy_find)
 		vim.keymap.set("n", "<leader>fs", builtin.live_grep)
+		vim.keymap.set("n", "<leader>ff", builtin.current_buffer_fuzzy_find)
+		vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols)
 		vim.keymap.set("n", "<leader>gs", builtin.git_branches)
 	end,
 }

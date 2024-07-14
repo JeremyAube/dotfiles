@@ -1,3 +1,3 @@
 require("jeremyaube.options")
-require("jeremyaube.keybinds")
+require("jeremyaube.remaps")
 require("jeremyaube.lazy")

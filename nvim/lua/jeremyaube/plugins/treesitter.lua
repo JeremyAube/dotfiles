@@ -1,6 +1,9 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
-	dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
+	dependencies = {
+		"nvim-treesitter/nvim-treesitter-textobjects",
+		"RRethy/nvim-treesitter-endwise",
+	},
 	build = ":TSUpdate",
 	event = { "BufReadPre", "BufNewFile" },
 	config = function()
@@ -13,6 +16,9 @@ return {
 				"css",
 				"markdown",
 				"markdown_inline",
+			},
+			endwise = {
+				enable = true,
 			},
 			sync_install = false,
 			auto_install = true,
@@ -39,16 +45,6 @@ return {
 						["ac"] = "@class.outer",
 						["ic"] = "@class.inner",
 					},
-				},
-			},
-
-			incremental_selection = {
-				enable = true,
-				keymaps = {
-					init_selection = "<C-m>",
-					node_incremental = "<C-m>",
-					scope_incremental = false,
-					node_decremental = "<bs>",
 				},
 			},
 

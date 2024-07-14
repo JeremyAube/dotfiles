@@ -17,22 +17,11 @@ return {
 					return require("CopilotChat.select").buffer(source)
 				end,
 			},
-			Fix = {
-				prompt = "/COPILOT_FIX There is a problem in this code. Rewrite the code to show it with the bug fixed.",
-				mapping = "<leader>if",
-			},
 			FixDiagnostic = {
 				prompt = "Please assist with the following diagnostic issue in file:",
 				mapping = "<leader>id",
 				selection = function(source)
 					return require("CopilotChat.select").diagnostics(source)
-				end,
-			},
-			CommitStaged = {
-				prompt = "Write commit message for the change with commitizen convention. Make sure the title has maximum 50 characters and message is wrapped at 72 characters. Wrap the whole message in code block with language gitcommit.",
-				mapping = "<leader>ic",
-				selection = function(source)
-					return require("CopilotChat.select").gitdiff(source, true)
 				end,
 			},
 		},
