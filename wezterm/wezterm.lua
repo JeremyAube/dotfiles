@@ -9,9 +9,11 @@ local config = wezterm.config_builder()
 -- For example, changing the color scheme:
 config.color_scheme = "Tokyo Night Moon"
 config.font = wezterm.font("Iosevka Nerd Font")
-config.font_size = 20
+config.font_size = 19
 config.enable_tab_bar = false
 config.window_decorations = "RESIZE"
+config.send_composed_key_when_left_alt_is_pressed = true
+config.send_composed_key_when_right_alt_is_pressed = false
 
 -- and finally, return the configuration to wezterm
 return config
