@@ -1,18 +1,14 @@
--- General
--- ============================================================
 vim.g.mapleader = " "
 
-vim.keymap.set("v", "<leader>y", '"+y')
-vim.keymap.set("v", "<leader>p", '"_dP')
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("v", "<leader>y", '"+y', { desc = "Yank to system clipboard" })
+vim.keymap.set("v", "<leader>p", '"_dP', { desc = "Paste but keep the same text in register" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Center the cursor on half page down" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Center the cursor on half page up" })
 
 -- Move Text
 -- ============================================================
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
-
-vim.keymap.set("n", "J", "mzJ`z")
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selected lines up 1 line" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selected lines down 1 line" })
 
 -- Diagnostics
 -- ============================================================
@@ -24,6 +20,13 @@ vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Open code a
 
 -- Quickfix List
 -- ============================================================
-vim.keymap.set("n", "<leader>q", ":copen<CR>", { desc = "Open quickfix list" })
+vim.keymap.set("n", "<leader>qo", ":copen<CR>", { desc = "Open quickfix list" })
+vim.keymap.set("n", "<leader>qq", ":cclose<CR>", { desc = "Close quickfix list" })
 vim.keymap.set("n", "[q", ":cprev<CR>", { desc = "Move to previous item in quickfix list" })
 vim.keymap.set("n", "]q", ":cnext<CR>", { desc = "Move to next item in quickfix list" })
+
+-- Tabs
+-- ============================================================
+vim.keymap.set("n", "<leader>tq", ":tabclose<CR>", { desc = "Close current tab" })
+vim.keymap.set("n", "<leader>tn", ":tabnext<CR>", { desc = "Go to next tab" })
+vim.keymap.set("n", "<leader>tp", ":tabprevious<CR>", { desc = "Go to previous tab" })
