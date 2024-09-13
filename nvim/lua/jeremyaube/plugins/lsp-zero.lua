@@ -2,22 +2,11 @@ return {
 	"VonHeikemen/lsp-zero.nvim",
 	branch = "v2.x",
 	dependencies = {
-		-- LSP Support
 		{ "neovim/nvim-lspconfig" },
 		{ "williamboman/mason.nvim" },
 		{ "williamboman/mason-lspconfig.nvim" },
-
-		-- Autocompletion
-		{ "hrsh7th/nvim-cmp" },
-		{ "hrsh7th/cmp-nvim-lsp" },
-		{ "hrsh7th/cmp-nvim-lua" },
-
-		-- Completion Icons
-		{ "onsails/lspkind.nvim" },
 	},
 	config = function()
-		-- LSP Setup
-		-- ============================================================
 		local lsp = require("lsp-zero").preset({})
 		lsp.on_attach(function(_, bufnr)
 			lsp.default_keymaps({ buffer = bufnr })
@@ -66,6 +55,7 @@ return {
 		local cmp = require("cmp")
 		cmp.setup({
 			sources = {
+				{ name = "nvm_lsp_signature_help" },
 				{ name = "nvim_lua" },
 				{ name = "nvim_lsp" },
 				{ name = "path" },
