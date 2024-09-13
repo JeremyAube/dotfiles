@@ -4,6 +4,9 @@ return {
 		require("mini.ai").setup()
 		require("mini.comment").setup()
 		require("mini.pairs").setup()
+		require("mini.tabline").setup({
+			show_icons = true,
+		})
 
 		-- ======== FILES ========
 		local mini_files = require("mini.files")
