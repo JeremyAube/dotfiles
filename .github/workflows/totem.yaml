@@ -1,0 +1,12 @@
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "keyboard/totem/**"
+      - ".github/workflows/totem.yaml"
+
+jobs:
+  build:
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+
