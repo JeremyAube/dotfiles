@@ -7,13 +7,6 @@ return {
 	config = function()
 		require("telescope").setup({
 			defaults = {
-				layout_config = {
-					prompt_position = "top",
-				},
-				preview = {
-					timeout = 1000,
-				},
-				layout_strategy = "flex",
 				sorting_strategy = "ascending",
 				file_ignore_patterns = {
 					".elixir_ls",
@@ -26,6 +19,7 @@ return {
 				mappings = {
 					i = {
 						["<C-q>"] = require("telescope.actions").smart_send_to_qflist,
+						["<esc>"] = require("telescope.actions").close,
 					},
 					n = {
 						["<C-q>"] = require("telescope.actions").smart_send_to_qflist,
@@ -34,16 +28,22 @@ return {
 			},
 		})
 		local builtin = require("telescope.builtin")
-		vim.keymap.set("n", "<leader>O", builtin.git_files)
+		local themes = require("telescope.themes")
+		vim.keymap.set("n", "<leader>O", function()
+			builtin.git_files(themes.get_ivy({}))
+		end)
 		vim.keymap.set("n", "<leader>o", function()
-			builtin.find_files({ hidden = true })
+			builtin.find_files(themes.get_ivy({ hidden = true }))
 		end)
 		vim.keymap.set("n", "<leader>b", builtin.buffers, {})
 		vim.keymap.set("n", "<leader>fs", function()
-			builtin.live_grep({ hidden = true })
+			builtin.live_grep(themes.get_ivy({ hidden = true }))
 		end)
-		vim.keymap.set("n", "<leader>ff", builtin.current_buffer_fuzzy_find)
-		vim.keymap.set("n", "<leader>fd", builtin.lsp_document_symbols)
-		vim.keymap.set("n", "<leader>gs", builtin.git_branches)
+		vim.keymap.set("n", "<leader>ff", function()
+			builtin.current_buffer_fuzzy_find(themes.get_ivy({}))
+		end)
+		vim.keymap.set("n", "<leader>gs", function()
+			builtin.git_branches(themes.get_ivy({}))
+		end)
 	end,
 }

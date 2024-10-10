@@ -1,7 +1,7 @@
 return {
 	"CopilotC-Nvim/CopilotChat.nvim",
 	dependencies = {
-		{ "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+		{ "nvim-lua/plenary.nvim" },
 	},
 	opts = {
 		mode = "split",
@@ -26,7 +26,7 @@ return {
 			},
 		},
 		window = {
-			layout = "vertical", -- 'vertical', 'horizontal', 'float'
+			layout = "float", -- 'vertical', 'horizontal', 'float'
 			-- relative = "editor", -- 'editor', 'win', 'cursor', 'mouse'
 			-- border = "single", -- 'none', single', 'double', 'rounded', 'solid', 'shadow'
 			-- width = 0.8, -- fractional width of parent

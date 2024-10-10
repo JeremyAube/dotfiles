@@ -94,36 +94,16 @@ simplified_ui true
 pane_frames false
 default_editor "nvim"
 scrollback_editor "/opt/homebrew/bin/nvim"
-
-themes {
-		rasmus {
-			bg "#1a1a19"
-			fg "#d1d1d1"
-			black "#333332"
-			red "#ff968c"
-			green "#61957f"
-			yellow "#ffc591"
-			blue "#8db4d4"
-			magenta "#de9bc8"
-			cyan "#7bb099"
-			white "#d1d1d1"
-      orange "#ff966c"
-		}
-    tokyonight_moon {
-        fg "#c8d3f5"
-        bg "#2f334d"
-        black "#1b1d2b"
-        red "#ff757f"
-        green "#c3e88d"
-        yellow "#ffc777"
-        blue "#82aaff"
-        magenta "#c099ff"
-        cyan "#86e1fc"
-        white "#828bb8"
-        orange "#ff966c"
-    }
+ui {
+  pane_frames {
+    rounded_corners true
+  }
 }
 
-theme "tokyonight_moon"
+themes {
+		
+}
+
+theme "catppuccin-mocha"
 
 default_mode "locked"

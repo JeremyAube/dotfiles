@@ -1,14 +1,13 @@
--- Pull in the wezterm API
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
-config.color_scheme = "Tokyo Night"
+config.color_scheme = "Catppuccin Mocha"
 
 config.font = wezterm.font({
 	family = "IosevkaCustom Nerd Font",
-	weight = "Medium",
+	weight = "DemiBold",
 })
-config.font_size = 18
+config.font_size = 17
 
 config.enable_tab_bar = false
 config.send_composed_key_when_left_alt_is_pressed = true

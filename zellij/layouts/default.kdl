@@ -3,19 +3,15 @@ layout {
         pane size=1 borderless=true {
             plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
                 format_left   "{mode} #[fg=#444a73]| {tabs} #[fg=#444a73]|"
-                format_right  "{datetime} "
                 format_hide_on_overlength "true"
                 format_precedence "lrc"
 
                 border_enabled  "false"
-                border_char     "-"
-                border_format   "#[fg=#1e2030]{char}"
-                border_position "bottom"
 
                 hide_frame_for_single_pane "true"
 
                 mode_locked        "#[fg=#828bb8,bold] LOCKED "
-                mode_tmux          "#[fg=#ff966c,bold] TMUX "
+                mode_tmux          "#[fg=#ff966c,bold] CMD "
                 mode_resize        "#[fg=#ff966c,bold] RESIZE "
                 mode_rename_tab    "#[fg=#ff966c,bold] RENAME-TAB "
                 mode_move          "#[fg=#ff966c,bold] MOVE "
@@ -28,10 +24,6 @@ layout {
                 tab_normal    "#[fg=#828bb8]{name}"
                 tab_active    "#[fg=#4fd6be,bold]{name}"
                 tab_separator "#[fg=#444a73] | "
-
-                datetime          "#[fg=#828bb8]{format}"
-                datetime_format   "%Y-%m-%d 󰅐 %H:%M"
-                datetime_timezone "America/Toronto"
             }
         }
         children

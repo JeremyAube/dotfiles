@@ -2,9 +2,15 @@ return {
 	"VonHeikemen/lsp-zero.nvim",
 	branch = "v2.x",
 	dependencies = {
-		{ "neovim/nvim-lspconfig" },
-		{ "williamboman/mason.nvim" },
-		{ "williamboman/mason-lspconfig.nvim" },
+		"neovim/nvim-lspconfig",
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+
+		"hrsh7th/nvim-cmp",
+		"hrsh7th/cmp-nvim-lsp",
+		"hrsh7th/cmp-nvim-lua",
+		"ray-x/lsp_signature.nvim",
+		"onsails/lspkind.nvim",
 	},
 	config = function()
 		local lsp = require("lsp-zero").preset({})
@@ -12,10 +18,12 @@ return {
 			lsp.default_keymaps({ buffer = bufnr })
 			lsp.buffer_autoformat()
 
-			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<cr>", { buffer = bufnr })
-			vim.keymap.set("n", "gc", "<cmd>Telescope lsp_incoming_calls<cr>", { buffer = bufnr })
+			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references theme=ivy<cr>", { buffer = bufnr })
+			vim.keymap.set("n", "gc", "<cmd>Telescope lsp_incoming_calls theme=ivy<cr>", { buffer = bufnr })
 		end)
 		lsp.setup()
+
+		require("mason").setup()
 
 		local lspconfig = require("lspconfig")
 		lspconfig.lua_ls.setup({
@@ -49,13 +57,16 @@ return {
 			},
 		})
 
-		-- Nvim CMP
+		-- Completion
 		-- ============================================================
+		require("lsp_signature").setup({
+			hint_enable = false,
+		})
+
 		local lspkind = require("lspkind")
 		local cmp = require("cmp")
 		cmp.setup({
 			sources = {
-				{ name = "nvm_lsp_signature_help" },
 				{ name = "nvim_lua" },
 				{ name = "nvim_lsp" },
 				{ name = "path" },
@@ -96,14 +107,5 @@ return {
 			local hl = "DiagnosticSign" .. type
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 		end
-
-		-- Format on save
-		-- ============================================================
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = vim.fn.bufnr(),
-			callback = function()
-				vim.lsp.buf.format({ timeout_ms = 1000 })
-			end,
-		})
 	end,
 }
