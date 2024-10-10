@@ -10,3 +10,4 @@ After building the font, I patch them with Nerd Font using Docker (run at the ro
 ```bash
 docker run --rm -v ./dist/IosevkaCustom/TTF:/in:Z -v ./dist/IosevkaCustom/TTF-NERD:/out:Z -e "PN=10" nerdfonts/patcher 
 ```
+

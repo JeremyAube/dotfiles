@@ -4,8 +4,8 @@ local config = wezterm.config_builder()
 config.color_scheme = "Catppuccin Mocha"
 
 config.font = wezterm.font({
-	family = "IosevkaCustom Nerd Font",
-	weight = "DemiBold",
+  family = "IosevkaCustom Nerd Font",
+  weight = "DemiBold",
 })
 config.font_size = 17
 
