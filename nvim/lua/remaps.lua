@@ -8,8 +8,8 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Center the cursor on half page
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Center the cursor on half page up" })
 
 -- ========== Indentation ==============
-vim.keymap.set("v", "<Tab>", ">gv|", { noremap = true })
-vim.keymap.set("v", "<S-Tab>", "<gv", { noremap = true })
+vim.keymap.set("v", ">", ">gv|", { noremap = true })
+vim.keymap.set("v", "<", "<gv", { noremap = true })
 
 -- ========== LSP ======================
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
