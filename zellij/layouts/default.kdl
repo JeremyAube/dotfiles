@@ -2,28 +2,32 @@ layout {
     default_tab_template {
         pane size=1 borderless=true {
             plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
-                format_left   "{mode} #[fg=#444a73]| {tabs} #[fg=#444a73]|"
-                format_hide_on_overlength "true"
+                format_left   "#[bg=#181825,fg=#6c7086] {session} {mode} {tabs}"
+                format_right "{command_git_branch}"
                 format_precedence "lrc"
+                format_hide_on_overlength "true"
 
                 border_enabled  "false"
 
-                hide_frame_for_single_pane "true"
+                mode_locked        "#[fg=#828bb8,bold] LOCKED     "
+                mode_tmux          "#[fg=#fab387,bold] TMUX       "
+                mode_resize        "#[fg=#fab387,bold] RESIZE     "
+                mode_rename_tab    "#[fg=#fab387,bold] RENAME-TAB "
+                mode_move          "#[fg=#fab387,bold] MOVE       "
+                mode_session       "#[fg=#fab387,bold] SESSION    "
+                mode_prompt        "#[fg=#fab387,bold] PROMPT     "
+                mode_scroll        "#[fg=#fab387,bold] SCROLL     "
+                mode_enter_search  "#[fg=#fab387,bold] ENT-SEARCH "
+                mode_search        "#[fg=#fab387,bold] SEARCHARCH "
 
-                mode_locked        "#[fg=#828bb8,bold] LOCKED "
-                mode_tmux          "#[fg=#ff966c,bold] CMD "
-                mode_resize        "#[fg=#ff966c,bold] RESIZE "
-                mode_rename_tab    "#[fg=#ff966c,bold] RENAME-TAB "
-                mode_move          "#[fg=#ff966c,bold] MOVE "
-                mode_session       "#[fg=#ff966c,bold] SESSION "
-                mode_prompt        "#[fg=#ff966c,bold] PROMPT "
-                mode_scroll        "#[bg=#f2cdcd,fg=#222436,bold] SCROLL "
-                mode_enter_search  "#[bg=#f2cdcd,fg=#222436,bold] ENT-SEARCH "
-                mode_search        "#[bg=#f2cdcd,fg=#222436,bold] SEARCHARCH "
+                tab_normal    "#[bg=#45475a,fg=#181825] {index} #[bg=#181825,fg=#a6adc8] {name} "
+                tab_active    "#[bg=#94e2d5,fg=#181825,bold] {index} #[bg=#181825,fg=#94e2d5,bold] {name} "
+                tab_separator " "
 
-                tab_normal    "#[fg=#828bb8]{name}"
-                tab_active    "#[fg=#4fd6be,bold]{name}"
-                tab_separator "#[fg=#444a73] | "
+                command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+                command_git_branch_format      "#[fg=red] {stdout} "
+                command_git_branch_interval    "10"
+                command_git_branch_rendermode  "static"
             }
         }
         children
