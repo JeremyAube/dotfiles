@@ -16,7 +16,6 @@ return {
 		local lsp = require("lsp-zero").preset({})
 		lsp.on_attach(function(_, bufnr)
 			lsp.default_keymaps({ buffer = bufnr })
-			lsp.buffer_autoformat()
 
 			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references theme=ivy<cr>", { buffer = bufnr })
 			vim.keymap.set("n", "gc", "<cmd>Telescope lsp_incoming_calls theme=ivy<cr>", { buffer = bufnr })
