@@ -1,7 +1,7 @@
 palette = "catppuccin_mocha"
 
 format = '''
- $directory$git_branch$git_status$git_state $python
+$directory$git_branch$git_status$git_state $python
 $character(orange) '''
 
 [directory]

@@ -1,0 +1,22 @@
+font-family = "IosevkaCustom Nerd Font"
+font-size = 17
+theme = catppuccin-mocha
+
+shell-integration = zsh
+shell-integration-features = no-title
+macos-option-as-alt = right
+font-thicken = true
+
+keybind = ctrl+b>v=new_split:right
+keybind = ctrl+b>s=new_split:down
+keybind = ctrl+b>h=goto_split:left
+keybind = ctrl+b>j=goto_split:bottom
+keybind = ctrl+b>k=goto_split:top
+keybind = ctrl+b>l=goto_split:right
+keybind = ctrl+b>n=next_tab
+keybind = ctrl+b>p=previous_tab
+
+keybind = super+shift+up=jump_to_prompt:-1
+keybind = super+shift+down=jump_to_prompt:1
+keybind = super+up=scroll_page_fractional:-0.5
+keybind = super+down=scroll_page_fractional:0.5

@@ -6,7 +6,7 @@
 !/.github/
 !.gitignore
 !/nvim/
-!/wezterm/
+!/ghostty/
 !starship.toml
 !/keyboard/
 !/zellij/
