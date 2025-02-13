@@ -10,7 +10,6 @@ vim.opt.hlsearch = false -- Don't highlight search results
 vim.opt.incsearch = true -- Incremental search
 vim.opt.scrolloff = 10 -- Never have less than 10 lines above or below the cursor
 vim.opt.cursorline = true -- Highlight the line where the cursor is
-vim.opt.laststatus = 0 -- remove status bar
 vim.opt.splitkeep = "cursor" -- keep cursor position when resizing
 
 -- Search

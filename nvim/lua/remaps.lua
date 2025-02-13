@@ -17,7 +17,6 @@ vim.keymap.set("v", "<", "<gv", { noremap = true })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-vim.keymap.set("n", "<leader>cl", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Open code actions" })
 
 -- ========== Quickfix List ============
@@ -28,5 +27,3 @@ vim.keymap.set("n", "]q", ":cnext<CR>", { desc = "Move to next item in quickfix 
 
 -- ========= Tabs ======================
 vim.keymap.set("n", "<leader>tq", ":tabclose<CR>", { desc = "Close current tab" })
-vim.keymap.set("n", "<leader>tn", ":tabnext<CR>", { desc = "Go to next tab" })
-vim.keymap.set("n", "<leader>tp", ":tabprevious<CR>", { desc = "Go to previous tab" })
