@@ -1,5 +1,5 @@
 font-family = "IosevkaCustom Nerd Font"
-font-size = 17
+font-size = 16
 theme = catppuccin-mocha
 
 shell-integration = zsh
@@ -7,16 +7,23 @@ shell-integration-features = no-title
 macos-option-as-alt = right
 font-thicken = true
 
-keybind = ctrl+b>v=new_split:right
-keybind = ctrl+b>s=new_split:down
-keybind = ctrl+b>h=goto_split:left
-keybind = ctrl+b>j=goto_split:bottom
-keybind = ctrl+b>k=goto_split:top
-keybind = ctrl+b>l=goto_split:right
-keybind = ctrl+b>n=next_tab
-keybind = ctrl+b>p=previous_tab
+window-padding-x = 5
+window-padding-y = 5
 
-keybind = super+shift+up=jump_to_prompt:-1
-keybind = super+shift+down=jump_to_prompt:1
+keybind = super+ctrl+h=new_split:left
+keybind = super+ctrl+j=new_split:down
+keybind = super+ctrl+k=new_split:up
+keybind = super+ctrl+l=new_split:right
+
+keybind = super+shift+h=goto_split:left
+keybind = super+shift+j=goto_split:bottom
+keybind = super+shift+k=goto_split:top
+keybind = super+shift+l=goto_split:right
+
 keybind = super+up=scroll_page_fractional:-0.5
-keybind = super+down=scroll_page_fractional:0.5
+keybind = super+down=scroll_page_fractional:0.6
+
+keybind = super+ctrl+left=resize_split:left,100
+keybind = super+ctrl+up=resize_split:up,100
+keybind = super+ctrl+down=resize_split:down,100
+keybind = super+ctrl+right=resize_split:right,100
