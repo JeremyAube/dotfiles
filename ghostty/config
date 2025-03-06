@@ -1,6 +1,6 @@
 font-family = "IosevkaCustom Nerd Font"
 font-size = 16
-theme = catppuccin-mocha
+theme = rose-pine-moon
 
 shell-integration = zsh
 shell-integration-features = no-title
