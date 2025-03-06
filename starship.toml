@@ -1,7 +1,7 @@
 palette = "catppuccin_mocha"
 
 format = '''
-$directory$git_branch$git_status$git_state $python
+$directory$git_branch$git_status$git_state
 $character(orange) '''
 
 [directory]
@@ -29,9 +29,6 @@ deleted = '[-${count}](bold red)'
 
 [git_state]
 style = 'bright-black'
-
-[python]
-python_binary = 'python3'
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
