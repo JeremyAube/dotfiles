@@ -11,7 +11,6 @@ return {
 			disable_line_numbers = false,
 			disable_relative_line_numbers = false,
 			graph_style = "kitty",
-			kind = "auto",
 			integrations = {
 				telescope = true,
 				diffview = true,
