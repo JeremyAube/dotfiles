@@ -14,14 +14,15 @@ vim.keymap.set("v", ">", ">gv|", { noremap = true })
 vim.keymap.set("v", "<", "<gv", { noremap = true })
 
 -- ========== LSP ======================
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Open code actions" })
+-- vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Open code actions" })
 
 -- ========== Quickfix List ============
 vim.keymap.set("n", "<leader>qo", ":copen<CR>", { desc = "Open quickfix list" })
-vim.keymap.set("n", "<leader>qq", ":cclose<CR>", { desc = "Close quickfix list" })
+vim.keymap.set("n", "<leader>qc", ":cclose<CR>", { desc = "Close quickfix list" })
 
 -- ========= Tabs ======================
 vim.keymap.set("n", "<leader>tq", ":tabclose<CR>", { desc = "Close current tab" })
+vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "Open a new tab" })
+vim.keymap.set("n", "<leader>tl", ":tabnext<CR>", { desc = "Open a new tab" })
+vim.keymap.set("n", "<leader>th", ":tabprev<CR>", { desc = "Open a new tab" })
