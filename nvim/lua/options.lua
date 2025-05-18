@@ -3,15 +3,16 @@ vim.o.timeoutlen = 1000
 
 -- Display
 -- ============================================================
-vim.wo.number = true -- Show line numbers
-vim.wo.relativenumber = true -- Show relative line numbers
-vim.wo.wrap = false -- Don't wrap lines
 vim.opt.cursorline = true -- Highlight the line where the cursor is
 vim.opt.hlsearch = false -- Don't highlight search results
 vim.opt.incsearch = true -- Incremental search
 vim.opt.scrolloff = 10 -- Never have less than 10 lines above or below the cursor
 vim.opt.signcolumn = "yes"
 vim.opt.splitkeep = "cursor" -- keep cursor position when resizing
+vim.wo.colorcolumn = "100"
+vim.wo.number = true -- Show line numbers
+vim.wo.relativenumber = true -- Show relative line numbers
+vim.wo.wrap = false -- Don't wrap lines
 
 -- Search
 -- ============================================================
