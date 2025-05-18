@@ -20,7 +20,6 @@ return {
 				mappings = {
 					i = {
 						["<C-q>"] = require("telescope.actions").smart_send_to_qflist,
-						["<esc>"] = require("telescope.actions").close,
 					},
 					n = {
 						["<C-q>"] = require("telescope.actions").smart_send_to_qflist,

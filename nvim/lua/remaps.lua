@@ -22,8 +22,6 @@ vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Open code a
 -- ========== Quickfix List ============
 vim.keymap.set("n", "<leader>qo", ":copen<CR>", { desc = "Open quickfix list" })
 vim.keymap.set("n", "<leader>qq", ":cclose<CR>", { desc = "Close quickfix list" })
-vim.keymap.set("n", "[q", ":cprev<CR>", { desc = "Move to previous item in quickfix list" })
-vim.keymap.set("n", "]q", ":cnext<CR>", { desc = "Move to next item in quickfix list" })
 
 -- ========= Tabs ======================
 vim.keymap.set("n", "<leader>tq", ":tabclose<CR>", { desc = "Close current tab" })
