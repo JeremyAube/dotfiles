@@ -6,7 +6,17 @@ return {
 		"FabijanZulj/blame.nvim",
 	},
 	config = function()
-		require("neogit").setup()
+		require("neogit").setup({
+			disable_hint = true,
+			disable_line_numbers = false,
+			disable_relative_line_numbers = false,
+			graph_style = "kitty",
+			kind = "auto",
+			integrations = {
+				telescope = true,
+				diffview = true,
+			},
+		})
 		require("diffview").setup({
 			enhanced_diff_hl = true,
 		})
