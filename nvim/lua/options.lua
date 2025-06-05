@@ -3,6 +3,7 @@ vim.o.timeoutlen = 1000
 
 -- Display
 -- ============================================================
+vim.o.statusline = "%t" -- Just show the file name in the status line
 vim.opt.cursorline = true -- Highlight the line where the cursor is
 vim.opt.hlsearch = false -- Don't highlight search results
 vim.opt.incsearch = true -- Incremental search
