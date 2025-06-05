@@ -35,6 +35,27 @@
             ]
           },
           {
+            "description": "LCTRL -> FN",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "left_control",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "fn"
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Fn -> HYPR",
             "manipulators": [
               {
