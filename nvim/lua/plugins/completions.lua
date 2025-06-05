@@ -67,9 +67,10 @@ return {
 		signature = { enabled = true },
 
 		sources = {
-			default = { "lsp", "snippets", "lazydev", "avante" },
+			default = { "lsp", "snippets", "avante" },
 			per_filetype = {
 				markdown = { "buffer" },
+				lua = { "lazydev" },
 			},
 			providers = {
 				lazydev = {
