@@ -4,6 +4,7 @@ return {
 		event = "VeryLazy",
 		config = function()
 			require("copilot").setup({
+				copilot_node_command = vim.fn.expand("$HOME") .. "/.asdf/installs/nodejs/22.16.0/bin/node", -- Node.js version must be > 20
 				suggestion = {
 					auto_trigger = true,
 					hide_during_completion = false,
@@ -35,15 +36,7 @@ return {
 			"zbirenbaum/copilot.lua",
 		},
 		config = {
-			provider = "scout",
-			vendors = {
-				scout = {
-					__inherited_from = "openai",
-					api_key_name = "SCOUT_API_KEY",
-					endpoint = "https://scout.mirego.com/api/chat/openai_compatible",
-					model = "gpt-4-1",
-				},
-			},
+			provider = "copilot",
 			hints = { enabled = false },
 			windows = {
 				width = 40,
@@ -57,8 +50,8 @@ return {
 				height = 6,
 			},
 			mappings = {
-				ask = "<leader>io",
-				new_ask = "<leader>in",
+				ask = "<leader>ia",
+				new_ask = "<leader>io",
 				edit = "<leader>ie",
 				refresh = "<leader>ir",
 				focus = "<leader>if",
