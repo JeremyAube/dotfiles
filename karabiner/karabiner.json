@@ -954,7 +954,7 @@
                   }
                 ],
                 "from": {
-                  "key_code": "t",
+                  "key_code": "v",
                   "modifiers": {
                     "optional": [
                       "any"
