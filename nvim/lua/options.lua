@@ -14,6 +14,7 @@ vim.wo.colorcolumn = "100"
 vim.wo.number = true -- Show line numbers
 vim.wo.relativenumber = true -- Show relative line numbers
 vim.wo.wrap = false -- Don't wrap lines
+vim.opt.fillchars:append({ stl = "─", stlnc = "─" })
 
 -- Search
 -- ============================================================
