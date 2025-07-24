@@ -1,7 +1,7 @@
 claude() {
     if [[ "$PWD" == ~/Developer/mirego* ]]; then
-        CLAUDE_CONFIG_DIR=~/Developer/mirego command claude "$@"
+        CLAUDE_CONFIG_DIR=~/Developer/mirego mise exec node@lts -- command /Users/jeremy/.claude/local/claude "$@"
     else
-        command claude "$@"
+        mise exec node@lts -- command /Users/jeremy/.claude/local/claude "$@"
     fi
 }
