@@ -26,4 +26,4 @@ eval "$(/Users/jeremy/.local/bin/mise activate zsh)"
 # export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
 export PATH="/Users/jeremy/.lando/bin:$PATH"; #landopath
-
+export DOTNET_CLI_TELEMETRY_OPTOUT=true
