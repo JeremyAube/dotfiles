@@ -6,7 +6,7 @@ alias vim="nvim"
 alias lg="lazygit"
 
 source ~/.config/zsh/pj.sh
-source ~/.config/zsh/claude-code.sh
+source ~/.config/zsh/ai.sh
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
@@ -27,3 +27,9 @@ eval "$(/Users/jeremy/.local/bin/mise activate zsh)"
 
 export PATH="/Users/jeremy/.lando/bin:$PATH"; #landopath
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
+
+# opencode
+export PATH=/Users/jeremy/.opencode/bin:$PATH
+
+# bun completions
+[ -s "/Users/jeremy/.bun/_bun" ] && source "/Users/jeremy/.bun/_bun"
