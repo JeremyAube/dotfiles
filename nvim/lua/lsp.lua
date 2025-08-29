@@ -32,3 +32,6 @@ vim.diagnostic.config({
 		prefix = "",
 	},
 })
+
+-- Custom language servers
+vim.lsp.enable("expert")
