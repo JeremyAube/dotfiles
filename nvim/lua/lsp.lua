@@ -3,8 +3,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 
 		if client:supports_method("textDocument/implementation") then
-			vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references theme=ivy<cr>", { buffer = args.buf })
-			vim.keymap.set("n", "gc", "<cmd>Telescope lsp_incoming_calls theme=ivy<cr>", { buffer = args.buf })
+			vim.keymap.set("n", "grr", "<cmd>Telescope lsp_references theme=ivy<cr>", { buffer = args.buf })
+			vim.keymap.set("n", "grc", "<cmd>Telescope lsp_incoming_calls theme=ivy<cr>", { buffer = args.buf })
 		end
 	end,
 })

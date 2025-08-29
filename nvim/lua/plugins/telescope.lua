@@ -43,5 +43,8 @@ return {
 		vim.keymap.set("n", "<leader>gs", function()
 			builtin.git_branches(themes.get_ivy({}))
 		end)
+		vim.keymap.set("n", "gO", function()
+			builtin.lsp_document_symbols(themes.get_ivy({}))
+		end)
 	end,
 }
