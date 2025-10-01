@@ -1,0 +1,16 @@
+#!/bin/bash
+# Utility to fuzzy search over my projects to easily switch between them
+
+personal_projects=$(find $HOME/Developer/perso -maxdepth 1 -type d)
+mirego_projects=$(find $HOME/Developer/mirego -maxdepth 2 -type d)
+zshrc_path="$HOME/.zshrc"
+config_path="$HOME/.config"
+dir=$(echo -e "$personal_projects\n$mirego_projects\n$zshrc_path\n$config_path" | fzf)
+
+case "$dir" in 
+  "") pwd;;
+  *".zshrc"*) nvim $dir;;
+  *".config"*) nvim -c "cd ~/.config" ~/.config;;
+  *) cd $dir
+esac
+

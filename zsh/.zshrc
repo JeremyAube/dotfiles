@@ -8,8 +8,7 @@ alias vi="nvim"
 alias vim="nvim"
 
 # Custom Commands
-source ~/.config/zsh/pj.sh
-source ~/.config/zsh/ai.sh
+export PATH="$HOME/.config/zsh/custom:$PATH"
 
 # Android
 export ANDROID_HOME=/Users/$USER/Library/Android/sdk
