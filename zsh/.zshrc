@@ -10,6 +10,9 @@ alias vim="nvim"
 # Custom Commands
 export PATH="$HOME/.config/zsh/custom:$PATH"
 
+# Custom functions
+source $HOME/.config/zsh/pj.sh
+
 # Android
 export ANDROID_HOME=/Users/$USER/Library/Android/sdk
 export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
