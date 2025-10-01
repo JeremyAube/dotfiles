@@ -3,7 +3,6 @@ return {
 	dependencies = {
 		"rafamadriz/friendly-snippets",
 		"onsails/lspkind.nvim",
-		"Kaiser-Yang/blink-cmp-avante",
 		{
 			"folke/lazydev.nvim",
 			ft = "lua",
@@ -16,7 +15,9 @@ return {
 	},
 	version = "1.*",
 	opts = {
-		keymap = { preset = "default" },
+		keymap = {
+			preset = "default",
+		},
 		appearance = {
 			use_nvim_cmp_as_default = true,
 			nerd_font_variant = "mono",
@@ -67,7 +68,7 @@ return {
 		signature = { enabled = true },
 
 		sources = {
-			default = { "lsp", "snippets", "avante" },
+			default = { "lsp", "snippets" },
 			per_filetype = {
 				markdown = { "buffer" },
 				lua = { "lazydev" },
@@ -78,10 +79,6 @@ return {
 					module = "lazydev.integrations.blink",
 					-- make lazydev completions top priority (see `:h blink.cmp`)
 					score_offset = 100,
-				},
-				avante = {
-					module = "blink-cmp-avante",
-					name = "Avante",
 				},
 			},
 		},
