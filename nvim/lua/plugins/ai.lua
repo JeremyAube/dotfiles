@@ -20,12 +20,9 @@ return {
 		},
 		keys = {
 			{
-				"<tab>",
+				"<c-;>",
 				function()
-					-- if there is a next edit, jump to it, otherwise apply it if any
-					if not require("sidekick").nes_jump_or_apply() then
-						return "<Tab>" -- fallback to normal tab
-					end
+					require("sidekick").nes_jump_or_apply()
 				end,
 				expr = true,
 				desc = "Goto/Apply Next Edit Suggestion",
@@ -33,29 +30,13 @@ return {
 			{
 				"<c-.>",
 				function()
-					require("sidekick.cli").focus()
-				end,
-				mode = { "n", "x", "i", "t" },
-				desc = "Sidekick Switch Focus",
-			},
-			{
-				"<leader>aa",
-				function()
-					require("sidekick.cli").toggle({ focus = true })
-				end,
-				desc = "Sidekick Toggle CLI",
-				mode = { "n", "v" },
-			},
-			{
-				"<leader>ac",
-				function()
 					require("sidekick.cli").toggle({ name = "claude", focus = true })
 				end,
-				desc = "Sidekick Claude Toggle",
-				mode = { "n", "v" },
+				mode = { "n", "x", "i", "t" },
+				desc = "Sidekick Toggle",
 			},
 			{
-				"<leader>ap",
+				"<leader>ia",
 				function()
 					require("sidekick.cli").select_prompt()
 				end,
