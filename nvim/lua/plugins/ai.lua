@@ -18,31 +18,20 @@ return {
 				},
 			},
 		},
-		keys = {
-			{
-				"<c-;>",
-				function()
-					require("sidekick").nes_jump_or_apply()
-				end,
-				expr = true,
-				desc = "Goto/Apply Next Edit Suggestion",
-			},
-			{
-				"<c-.>",
-				function()
-					require("sidekick.cli").toggle({ name = "claude", focus = true })
-				end,
-				mode = { "n", "x", "i", "t" },
-				desc = "Sidekick Toggle",
-			},
-			{
-				"<leader>ia",
-				function()
-					require("sidekick.cli").select_prompt()
-				end,
-				desc = "Sidekick Ask Prompt",
-				mode = { "n", "v" },
-			},
-		},
+		config = function(_, opts)
+			require("sidekick").setup(opts)
+
+			vim.keymap.set({ "n", "i", "x", "t" }, "<c-;>", function()
+				require("sidekick").nes_jump_or_apply()
+			end, { expr = true, desc = "Goto/Apply Next Edit Suggestion" })
+
+			vim.keymap.set({ "n", "x", "i", "t" }, "<c-.>", function()
+				require("sidekick.cli").toggle({ name = "claude", focus = true })
+			end, { desc = "Sidekick Toggle" })
+
+			vim.keymap.set({ "n", "v" }, "<leader>ia", function()
+				require("sidekick.cli").select_prompt()
+			end, { desc = "Sidekick Ask Prompt" })
+		end,
 	},
 }
