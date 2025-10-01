@@ -41,11 +41,9 @@ keybind = super+shift+j=goto_split:bottom
 keybind = super+shift+k=goto_split:top
 keybind = super+shift+l=goto_split:right
 
-keybind = super+up=scroll_page_fractional:-0.5
-keybind = super+down=scroll_page_fractional:0.6
-
 keybind = super+ctrl+left=resize_split:left,100
 keybind = super+ctrl+up=resize_split:up,100
 keybind = super+ctrl+down=resize_split:down,100
 keybind = super+ctrl+right=resize_split:right,100
 keybind = shift+enter=text:\n
+keybind = super+opt+k=toggle_command_palette
