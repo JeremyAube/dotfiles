@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$PWD" == ~/Developer/mirego* ]]; then
-    CLAUDE_CONFIG_DIR=~/Developer/mirego mise exec node@lts -- command /Users/jeremy/.claude/local/claude "$@"
+    CLAUDE_CONFIG_DIR=~/Developer/mirego mise exec node@lts -- command opencode "$@"
     # opencode "$@"
 else
     mise exec node@lts -- command /Users/jeremy/.claude/local/claude "$@"
