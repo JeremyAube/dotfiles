@@ -1,6 +1,8 @@
 vim.opt.termguicolors = true
 vim.o.timeoutlen = 1000
 
+vim.cmd.colorscheme("custom")
+
 -- Display
 -- ============================================================
 vim.o.statusline = "%t" -- Just show the file name in the status line
