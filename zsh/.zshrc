@@ -6,6 +6,7 @@ export EDITOR="$VISUAL"
 # Alias
 alias vi="nvim"
 alias vim="nvim"
+alias ls="ls -p"
 
 # Custom Commands
 export PATH="$HOME/.config/zsh/custom:$PATH"
