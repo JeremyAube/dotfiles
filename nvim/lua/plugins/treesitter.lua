@@ -14,6 +14,7 @@ return {
 				"tsx",
 				"html",
 				"css",
+				"elixir",
 			},
 			endwise = {
 				enable = true,
