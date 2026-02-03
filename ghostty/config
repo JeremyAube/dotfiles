@@ -6,6 +6,9 @@ theme = Nvim Dark
 font-thicken = true
 shell-integration = zsh
 
+window-padding-y = 2
+window-padding-x = 2
+
 keybind = super+ctrl+h=new_split:left
 keybind = super+ctrl+j=new_split:down
 keybind = super+ctrl+k=new_split:up
