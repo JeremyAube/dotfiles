@@ -2,9 +2,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "keyboard/totem/**"
-      - ".github/workflows/totem.yaml"
 
 jobs:
   build:
