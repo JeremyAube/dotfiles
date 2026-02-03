@@ -2,10 +2,13 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "keyboard/totem/**"
+      - ".github/workflows/totem.yaml"
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    uses: robbowland/zmk/.github/workflows/build-user-config.yml@allow_nested_configs
     with:
       config_path: keyboard/totem/config
       build_matrix_path: keyboard/totem/build.yaml
