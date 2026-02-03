@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    uses: robbowland/zmk/.github/workflows/build-user-config.yml@allow_nested_configs
+    uses: robbowland/zmk/.github/workflows/build-user-config.yml@robbow/ci/allow_nested_configs
     with:
       config_path: keyboard/totem/config
       build_matrix_path: keyboard/totem/build.yaml
