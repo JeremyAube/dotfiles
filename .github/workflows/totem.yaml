@@ -9,6 +9,6 @@ on:
 jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
-    defaults:
-      run:
-        working-directory: keyboard/totem
+    with:
+      config_path: keyboard/totem/config
+      build_matrix_path: keyboard/totem/build.yaml
