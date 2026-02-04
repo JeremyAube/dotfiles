@@ -56,7 +56,7 @@
                     bindings = <
                 &kp N1          &kp N2         &kp N3      &kp N4        &kp N5          &kp N6      &kp N7      &kp N8      &kp N9         &kp N0       
                 &mt LCTRL LA(U) &mt LALT LA(I) &kp LGUI    &kp LA(GRAVE) &kp LA(E)       &kp LEFT    &kp DOWN    &mt RGUI UP &mt RALT RIGHT &mt RCTRL BSPC 
-    &trans      &kp LA(N)       &kp SLASH      &kp LA(C)   &trans        &trans          &kp MINUS   &kp PLUS    &kp DOT     &kp COMA         &trans          &trans         
+    &trans      &kp LA(N)       &kp SLASH      &kp LA(C)   &trans        &trans          &kp MINUS   &kp PLUS    &kp DOT     &kp COMMA         &trans          &trans         
                                                &trans      &trans        &trans          &trans      &trans      &trans      
                     >;
                 };
