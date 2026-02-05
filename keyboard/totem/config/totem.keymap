@@ -33,7 +33,7 @@
                     bindings = <
                   &kp Q       &kp W       &kp E       &kp R       &kp T           &kp Y       &kp U        &kp I       &kp O       &kp P
                   &mt LCTRL A &mt LALT S  &mt LGUI D  &mt MEH F   &mt HYPR G      &kp H       &kp J        &mt RGUI K  &mt RALT L  &mt RCTRL BSPC
-    &MT LCTRL ESC &kp Z       &kp X       &kp C       &kp V       &kp B           &kp N       &kp M        &kp COMMA   &kp DOT     &kp TAB         &kp BSPC
+    &mt LCTRL ESC &kp Z       &kp X       &kp C       &kp V       &kp B           &kp N       &kp M        &kp COMMA   &kp DOT     &kp TAB         &kp BSPC
                                           &lt FN ESC  &kp LSHIFT  &sl SYM         &sl NUM     &lt FN SPACE &mt RGUI RET
                     >;
                 };
@@ -65,10 +65,10 @@
                 function_layer {
                     label= "FN";
                     bindings = <
-                  &kp F1        &kp F2        &kp F3      &kp F4      &kp F5          &kp F6      &kp F7       &kp F8            &kp F9       &kp F10
-                  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL2 &trans      &bt BT_CLR      &trans      &kp C_VOL_UP &mt RGUI C_BRI_UP &mt RALT F11 &mt RCTRL DEL  
-    &trans        &trans        &trans        &kp LG(X)   &kp LG(C)   &kp LG(V)       &trans      &kp C_VOL_DN &kp C_BRI_DN      &kp F12      &trans        &trans         
-                                              &trans      &trans      &trans          &trans      &trans       &trans      
+                  &kp F1        &kp F2        &kp F3        &kp F4      &kp F5          &kp F6      &kp F7       &kp F8            &kp F9       &kp F10
+                  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &trans      &bt BT_CLR      &trans      &kp C_VOL_UP &mt RGUI C_BRI_UP &mt RALT F11 &mt RCTRL DEL  
+    &trans        &trans        &trans        &kp LG(X)     &kp LG(C)   &kp LG(V)       &trans      &kp C_VOL_DN &kp C_BRI_DN      &kp F12      &trans        &trans         
+                                              &trans        &trans      &trans          &trans      &trans       &trans      
                     >;
                 };
         };
