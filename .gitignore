@@ -7,7 +7,7 @@
 !.gitignore
 !/nvim/
 !/ghostty/
-!starship.toml
+!/starship/
 !/keyboard/
 !/font/
 !/aerospace
