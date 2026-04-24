@@ -1,4 +1,5 @@
 eval "$(starship init zsh)"
+eval "$(/Users/jeremy/.local/bin/mise activate zsh)"
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
@@ -17,7 +18,6 @@ source $HOME/.config/zsh/pj.sh
 # Plugins
 # source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source <(fzf --zsh)
-eval "$(/Users/jeremy/.local/bin/mise activate zsh)"
 
 # .NET
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
