@@ -21,3 +21,4 @@ source <(fzf --zsh)
 
 # .NET
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
+export PATH="/Users/jeremy/.local/share/goi/bin:$PATH"
