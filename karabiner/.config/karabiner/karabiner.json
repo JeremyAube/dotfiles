@@ -181,22 +181,6 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Open Cursor",
-                                "from": {
-                                    "key_code": "x",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "shell_command": "open -a Cursor.app" }],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "name": "hyper",
-                                        "type": "variable_if",
-                                        "value": 1
-                                    }
-                                ],
                                 "description": "Open Music",
                                 "from": {
                                     "key_code": "u",
@@ -251,22 +235,6 @@
                                     "modifiers": { "optional": ["any"] }
                                 },
                                 "to": [{ "shell_command": "open -a Slack.app" }],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "name": "hyper",
-                                        "type": "variable_if",
-                                        "value": 1
-                                    }
-                                ],
-                                "description": "Open Android Studio",
-                                "from": {
-                                    "key_code": "a",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [{ "shell_command": "open -a 'Android Studio'.app" }],
                                 "type": "basic"
                             },
                             {
@@ -347,15 +315,36 @@
                                 },
                                 "to": [{ "shell_command": "open -g rectangle://execute-action?name=next-display" }],
                                 "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Window: Center",
+                                "from": {
+                                    "key_code": "a",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "c",
+                                        "modifiers": ["fn", "left_control"]
+                                    }
+                                ],
+                                "type": "basic"
                             }
                         ]
                     },
                     {
-                        "description": "Tab Hold -> Symbols layer",
+                        "description": "Right CMD Hold -> Symbols layer",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "tab",
+                                    "key_code": "right_command",
                                     "modifiers": { "optional": ["any"] }
                                 },
                                 "to": [
@@ -374,7 +363,7 @@
                                         }
                                     }
                                 ],
-                                "to_if_alone": [{ "key_code": "tab" }],
+                                "to_if_alone": [{ "key_code": "right_command" }],
                                 "type": "basic"
                             }
                         ]
@@ -771,26 +760,6 @@
                                     }
                                 ],
                                 "from": {
-                                    "key_code": "f",
-                                    "modifiers": { "optional": ["any"] }
-                                },
-                                "to": [
-                                    {
-                                        "key_code": "hyphen",
-                                        "modifiers": ["left_shift"]
-                                    }
-                                ],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "name": "nav",
-                                        "type": "variable_if",
-                                        "value": 1
-                                    }
-                                ],
-                                "from": {
                                     "key_code": "e",
                                     "modifiers": { "optional": ["any"] }
                                 },
@@ -845,9 +814,8 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "accent_layer",
-                                        "type": "variable_if",
-                                        "value": 1
+                                        "type": "expression_if",
+                                        "expression": "accent_layer + accent_oneshot > 0"
                                     }
                                 ],
                                 "from": {
@@ -861,7 +829,7 @@
                                     },
                                     {
                                         "set_variable": {
-                                            "name": "accent_layer",
+                                            "name": "accent_oneshot",
                                             "value": 0
                                         }
                                     }
@@ -871,9 +839,8 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "accent_layer",
-                                        "type": "variable_if",
-                                        "value": 1
+                                        "type": "expression_if",
+                                        "expression": "accent_layer + accent_oneshot > 0"
                                     }
                                 ],
                                 "from": {
@@ -884,6 +851,12 @@
                                     {
                                         "key_code": "grave_accent_and_tilde",
                                         "modifiers": ["left_option"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_oneshot",
+                                            "value": 0
+                                        }
                                     }
                                 ],
                                 "type": "basic"
@@ -891,9 +864,8 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "accent_layer",
-                                        "type": "variable_if",
-                                        "value": 1
+                                        "type": "expression_if",
+                                        "expression": "accent_layer + accent_oneshot > 0"
                                     }
                                 ],
                                 "from": {
@@ -904,6 +876,12 @@
                                     {
                                         "key_code": "i",
                                         "modifiers": ["left_option"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_oneshot",
+                                            "value": 0
+                                        }
                                     }
                                 ],
                                 "type": "basic"
@@ -911,9 +889,8 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "accent_layer",
-                                        "type": "variable_if",
-                                        "value": 1
+                                        "type": "expression_if",
+                                        "expression": "accent_layer + accent_oneshot > 0"
                                     }
                                 ],
                                 "from": {
@@ -924,6 +901,12 @@
                                     {
                                         "key_code": "u",
                                         "modifiers": ["left_option"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_oneshot",
+                                            "value": 0
+                                        }
                                     }
                                 ],
                                 "type": "basic"
@@ -931,9 +914,8 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "accent_layer",
-                                        "type": "variable_if",
-                                        "value": 1
+                                        "type": "expression_if",
+                                        "expression": "accent_layer + accent_oneshot > 0"
                                     }
                                 ],
                                 "from": {
@@ -944,6 +926,37 @@
                                     {
                                         "key_code": "c",
                                         "modifiers": ["left_option"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_oneshot",
+                                            "value": 0
+                                        }
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "type": "expression_if",
+                                        "expression": "accent_layer + accent_oneshot > 0"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "d",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "hyphen",
+                                        "modifiers": ["left_shift"]
+                                    },
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_oneshot",
+                                            "value": 0
+                                        }
                                     }
                                 ],
                                 "type": "basic"
@@ -951,7 +964,7 @@
                         ]
                     },
                     {
-                        "description": "RShift -> Sticky Accent Layer",
+                        "description": "RShift -> Hold or Sticky Accent Layer",
                         "manipulators": [
                             {
                                 "from": {
@@ -966,24 +979,22 @@
                                         }
                                     }
                                 ],
-                                "to_delayed_action": {
-                                    "to_if_canceled": [
-                                        {
-                                            "set_variable": {
-                                                "name": "accent_layer",
-                                                "value": 0
-                                            }
+                                "to_if_alone": [
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_oneshot",
+                                            "value": 1
                                         }
-                                    ],
-                                    "to_if_invoked": [
-                                        {
-                                            "set_variable": {
-                                                "name": "accent_layer",
-                                                "value": 0
-                                            }
+                                    }
+                                ],
+                                "to_after_key_up": [
+                                    {
+                                        "set_variable": {
+                                            "name": "accent_layer",
+                                            "value": 0
                                         }
-                                    ]
-                                },
+                                    }
+                                ],
                                 "type": "basic"
                             }
                         ]
