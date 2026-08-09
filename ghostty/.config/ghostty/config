@@ -3,6 +3,8 @@ font-size = 16
 
 theme = Nvim Dark
 
+macos-option-as-alt=right
+
 font-thicken = true
 shell-integration = zsh
 
