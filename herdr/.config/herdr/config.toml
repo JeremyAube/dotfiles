@@ -1,0 +1,20 @@
+onboarding = false
+
+[keys]
+next_workspace = "prefix+ctrl+j"
+previous_workspace = "prefix+ctrl+k"
+previous_agent = "prefix+ctrl+h"
+next_agent = "prefix+ctrl+l"
+
+[ui]
+mouse_capture = false
+copy_on_select = false
+pane_gaps = false
+
+[experimental]
+pane_history = false
+kitty_graphics = true
+
+[theme]
+name = "vesper"
+auto_switch = false
