@@ -245,6 +245,22 @@
                                         "value": 1
                                     }
                                 ],
+                                "description": "Open Mail",
+                                "from": {
+                                    "key_code": "o",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "shell_command": "open -a Mail.app" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
                                 "description": "Window: Left Half",
                                 "from": {
                                     "key_code": "comma",
@@ -308,12 +324,16 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Rectangle: Next Display",
+                                "description": "Window: Move to Other Display",
                                 "from": {
                                     "key_code": "spacebar",
                                     "modifiers": { "optional": ["any"] }
                                 },
-                                "to": [{ "shell_command": "open -g rectangle://execute-action?name=next-display" }],
+                                "to": [
+                                    {
+                                        "shell_command": "/usr/bin/osascript \"$HOME/.config/karabiner/scripts/move-window-to-other-display.applescript\""
+                                    }
+                                ],
                                 "type": "basic"
                             },
                             {
