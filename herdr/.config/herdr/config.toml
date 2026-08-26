@@ -7,7 +7,6 @@ previous_agent = "prefix+ctrl+h"
 next_agent = "prefix+ctrl+l"
 
 [ui]
-mouse_capture = false
 copy_on_select = false
 pane_gaps = false
 
