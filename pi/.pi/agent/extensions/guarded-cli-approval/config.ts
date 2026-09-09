@@ -37,4 +37,8 @@ export const GUARDED_CLI_FAMILIES: GuardedCliFamily[] = [
     label: "kamal",
     patterns: [/kamal/i],
   },
+  {
+    label: "acli",
+    patterns: [/(?:^|[-_.])acli(?:$|[-_.])/i],
+  },
 ];
