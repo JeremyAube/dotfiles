@@ -8,6 +8,7 @@ Pi package/extension that asks for approval before running guarded CLIs.
 - AWS (`aws`, wrappers containing `aws`)
 - Azure (`az` as a name segment)
 - Heroku (`heroku`, wrappers containing `heroku`)
+- GitHub CLI (`gh` as a name segment)
 
 ## Customize
 

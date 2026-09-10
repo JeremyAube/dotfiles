@@ -41,4 +41,8 @@ export const GUARDED_CLI_FAMILIES: GuardedCliFamily[] = [
     label: "acli",
     patterns: [/(?:^|[-_.])acli(?:$|[-_.])/i],
   },
+  {
+    label: "GitHub CLI",
+    patterns: [/(?:^|[-_.])gh(?:$|[-_.])/i],
+  },
 ];
