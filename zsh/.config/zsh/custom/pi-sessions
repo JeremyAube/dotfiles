@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# List Pi sessions with the same title/preview displayed by Pi's /resume picker.
+# Usage: pi-sessions [--from YYYY-MM-DD] [--to YYYY-MM-DD]
+# --from is inclusive; --to is exclusive. Dates are interpreted as UTC.
+
+set -euo pipefail
+
+session_dir="${PI_CODING_AGENT_SESSION_DIR:-$HOME/.pi/agent/sessions}"
+from=""
+to=""
+
+usage() {
+  echo "Usage: pi-sessions [--from YYYY-MM-DD] [--to YYYY-MM-DD]" >&2
+  exit 2
+}
+
+while (($#)); do
+  case "$1" in
+    --from)
+      (($# >= 2)) || usage
+      from="$2"
+      shift 2
+      ;;
+    --to)
+      (($# >= 2)) || usage
+      to="$2"
+      shift 2
+      ;;
+    -h|--help) usage ;;
+    *) usage ;;
+  esac
+done
+
+[[ -d "$session_dir" ]] || {
+  echo "Pi session directory not found: $session_dir" >&2
+  exit 1
+}
+
+find "$session_dir" -type f -name '*.jsonl' -print0 |
+  while IFS= read -r -d '' file; do
+    # A session can be interrupted while Pi is appending to it. Ignore a
+    # temporarily incomplete file and include it on the next run instead.
+    jq -rs --arg from "$from" --arg to "$to" '
+      . as $entries
+      | ($entries | map(select(.type == "session")) | first) as $session
+      | select($session != null)
+      | ($session.timestamp // "") as $timestamp
+      | select($from == "" or $timestamp >= $from)
+      | select($to == "" or $timestamp < $to)
+      # The /resume picker uses the latest session name when set; otherwise,
+      # it uses the first text-bearing user message.
+      | ($entries
+          | map(select(.type == "session_info"))
+          | last
+          | .name? // "") as $name
+      | ($entries
+          | map(select(.type == "message" and .message.role == "user"))
+          | map(.message.content
+              | if type == "string" then .
+                else map(select(.type == "text").text) | join(" ")
+                end)
+          | map(select(length > 0))
+          | first // "(no messages)") as $first_message
+      | ($name | gsub("^\\s+|\\s+$"; "")) as $trimmed_name
+      | {
+          timestamp: $timestamp,
+          cwd: ($session.cwd // "(unknown directory)"),
+          preview: (if $trimmed_name != "" then $trimmed_name else $first_message end)
+        }
+    ' "$file" 2>/dev/null || true
+  done |
+  jq -sr '
+    sort_by(.timestamp) | reverse | .[]
+    | "────────────────────────────────────────────────────────────────\n"
+      + "Date:      \(.timestamp)\n"
+      + "Directory: \(.cwd)\n"
+      + "\n"
+      + (.preview | gsub("\\r\\n?"; "\n"))
+      + "\n"
+  '
