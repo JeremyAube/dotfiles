@@ -34,4 +34,4 @@ Common argument patterns:
 3. (Optional) Run `git log -n 50 --pretty=format:%s` to see commonly used scopes.
 4. If there are ambiguous extra files, ask me for clarification before committing.
 5. Stage only the intended files (all changes if no files specified).
-6. Run `git commit -m "<subject>"` (and `-m "<body>"` if needed).
+6. DO NOT COMMIT. Output the commit message and I will tell you if it's good
