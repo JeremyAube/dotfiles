@@ -1,0 +1,32 @@
+[tools]
+1password-cli = "latest"
+acli = "latest"
+ansible-core = "latest"
+aws-cli = { version = "latest", symlink_bins = "true" }
+awsebcli = "latest"
+azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
+codex = "latest"
+elixir = "latest"
+erlang = "latest"
+fzf = "latest"
+gh = "latest"
+go = "latest"
+heroku-cli = "latest"
+jq = "latest"
+kubectl = "latest"
+neovim = "latest"
+node = "24"
+"npm:@earendil-works/pi-coding-agent" = "latest"
+"npm:calldiff" = "latest"
+"npm:opencode-ai" = "latest"
+"npm:tree-sitter-cli" = "latest"
+postgres = "latest"
+python = "3.12"
+ripgrep = "latest"
+ruby = "latest"
+uv = "latest"
+
+[settings]
+
+[settings.ruby]
+compile = false
