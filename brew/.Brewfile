@@ -1,0 +1,25 @@
+brew "imagemagick"
+brew "stow"
+brew "mas"
+brew "xcodesorg/made/xcodes"
+
+cask "1password"
+cask "alfred"
+cask "docker-desktop"
+cask "ghostty"
+cask "harvest"
+cask "helium-browser"
+cask "karabiner-elements"
+cask "languagetool-desktop"
+cask "notion-calendar"
+cask "postman"
+cask "proton-drive"
+cask "protonvpn"
+cask "signal"
+cask "slack"
+cask "tableplus"
+cask "tailscale-app"
+cask "monitorcontrol"
+
+mas "Numbers", id: 361304891
+mas "Things", id: 904280696
