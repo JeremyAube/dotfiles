@@ -8,7 +8,7 @@ My personal configuration files, managed with [GNU Stow](https://www.gnu.org/sof
 | ----------- | ----------------------------------------------- |
 | `ghostty`   | Ghostty terminal config                         |
 | `herdr`     | herdr config                                    |
-| `karabiner` | Karabiner-Elements config (keyboard remapping) |
+| `karabiner` | Karabiner-Elements config (keyboard remapping)  |
 | `mise`      | mise tool versions & settings                   |
 | `nvim`      | Neovim config                                   |
 | `pi`        | pi coding agent config                          |
@@ -40,3 +40,4 @@ Or just a subset:
 
 Each package directory mirrors the layout of `$HOME`, so stowing creates the
 appropriate symlinks (e.g. `ghostty/.config/ghostty` → `~/.config/ghostty`).
+

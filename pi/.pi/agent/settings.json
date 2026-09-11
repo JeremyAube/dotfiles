@@ -1,0 +1,14 @@
+{
+  "lastChangelogVersion": "0.85.1",
+  "defaultProvider": "forra",
+  "defaultModel": "azure-glm-5.3",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": false,
+  "theme": "dark",
+  "packages": [
+    "npm:pi-web-access",
+    "npm:@narumitw/pi-chrome-devtools",
+    "npm:@plannotator/pi-extension",
+    "npm:pi-tuicr"
+  ]
+}

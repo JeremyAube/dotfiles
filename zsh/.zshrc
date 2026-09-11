@@ -15,12 +15,17 @@ export PATH="$HOME/.config/zsh/custom:$PATH"
 # Custom functions
 source $HOME/.config/zsh/pj.sh
 
+# Private environment (API keys, internal URLs) — never in any repo
+[[ -f $HOME/.private.env ]] && source $HOME/.private.env
+
 # Plugins
 # source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source <(fzf --zsh)
 
 # .NET
 export DOTNET_CLI_TELEMETRY_OPTOUT=true
+
+# Goi
 export PATH="/Users/jeremy/.local/share/goi/bin:$PATH"
 
 # Herdr-specific key bindings (herdr does not inject shell integration like Ghostty does)
