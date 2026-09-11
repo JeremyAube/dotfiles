@@ -5,6 +5,8 @@
 
 !/.github/
 !.gitignore
+!/README.md
+!/setup.sh
 !/nvim/
 !/ghostty/
 !/starship/
