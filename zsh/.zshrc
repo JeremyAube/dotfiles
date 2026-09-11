@@ -13,7 +13,7 @@ alias ls="ls -p"
 export PATH="$HOME/.config/zsh/custom:$PATH"
 
 # Custom functions
-source $HOME/.config/zsh/pj.sh
+pj() { local d=$(command pj); [[ -n "$d" ]] && cd "$d"; }
 
 # Private environment (API keys, internal URLs) — never in any repo
 [[ -f $HOME/.private.env ]] && source $HOME/.private.env

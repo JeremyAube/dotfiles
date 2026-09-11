@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Project jumper: fuzzy-find a project (or config) and open it.
+# Prints the selected directory to stdout (for the caller to cd into).
+# Special selections (.zshrc, .config) are opened directly in the editor.
+
+set -euo pipefail
+
+command -v fzf >/dev/null || {
+  echo "pj: fzf is required but not installed" >&2
+  exit 1
+}
+
+personal_projects=$(find "$HOME/Developer/perso" -maxdepth 1 -type d 2>/dev/null)
+mirego_projects=$(find "$HOME/Developer/mirego" -maxdepth 2 -type d 2>/dev/null)
+
+dir=$(printf '%s\n%s\n%s\n%s\n' \
+  "$personal_projects" \
+  "$mirego_projects" | fzf) || true
+
+case "$dir" in
+  "")
+    # Nothing selected: print the current directory so the wrapper is a no-op.
+    pwd
+    ;;
+  *)
+    # Print the directory; the shell wrapper performs the actual cd.
+    printf '%s\n' "$dir"
+    ;;
+esac
