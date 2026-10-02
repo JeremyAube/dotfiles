@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "1.0.0",
   "defaultProvider": "forra",
   "defaultModel": "azure-glm-5.3",
   "defaultThinkingLevel": "high",
@@ -10,5 +10,15 @@
     "npm:@narumitw/pi-chrome-devtools",
     "npm:@plannotator/pi-extension",
     "npm:pi-tuicr"
-  ]
+  ],
+  "fullscreenCopyOnSelect": false,
+  "outputPad": 1,
+  "editorPaddingX": 0,
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "transport": "auto",
+  "doubleEscapeAction": "tree",
+  "treeFilterMode": "default",
+  "tuiMode": "regular"
 }
