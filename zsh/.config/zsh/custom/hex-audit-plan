@@ -1,0 +1,302 @@
+#!/usr/bin/env elixir
+# Builds an upgrade plan for every locked Hex package that has a security advisory.
+#
+# Usage (from the root of any Mix project; requires Elixir >= 1.18 for the JSON module):
+#
+#     hex-audit-plan [--json] [package ...]
+#
+# Projects that need env variables at compile time (e.g. TENANT_KEY) must load them first:
+#
+#     nv .env.dev.local hex-audit-plan
+#
+# Data sources (structured data only):
+#
+#   * `mix hex.outdated --all --json` — locked versions and who requires each package
+#   * OSV `POST /v1/querybatch`       — finds the vulnerable packages in a single request
+#   * Hex `GET /api/packages/:name`   — versions, retirements and advisories (with affected ranges)
+#   * Hex `GET /api/packages/:name/releases/:version` — requirements of a parent release
+#
+# The plan is a proposal: apply it, then confirm with `mix hex.audit`.
+
+defmodule HexAuditPlan.HTTP do
+  @moduledoc "Minimal JSON HTTP client built on :httpc."
+
+  def get_json(url), do: request(:get, url, nil)
+
+  def post_json(url, body), do: request(:post, url, JSON.encode!(body))
+
+  defp request(method, url, body) do
+    headers = [{~c"user-agent", ~c"hex_audit_plan"}, {~c"accept", ~c"application/json"}]
+    request = if body, do: {String.to_charlist(url), headers, ~c"application/json", body}, else: {String.to_charlist(url), headers}
+
+    case :httpc.request(method, request, [ssl: ssl_options(), timeout: 30_000], body_format: :binary) do
+      {:ok, {{_, 200, _}, _headers, response}} ->
+        JSON.decode!(response)
+
+      {:ok, {{_, 429, _}, response_headers, _}} ->
+        wait_for_rate_limit_reset(response_headers)
+        request(method, url, body)
+
+      {:ok, {{_, status, _}, _headers, response}} ->
+        raise "#{method} #{url} failed with HTTP #{status}: #{response}"
+
+      {:error, reason} ->
+        raise "#{method} #{url} failed: #{inspect(reason)}"
+    end
+  end
+
+  defp wait_for_rate_limit_reset(headers) do
+    reset_at = headers |> List.keyfind(~c"x-ratelimit-reset", 0, {nil, ~c"0"}) |> elem(1) |> List.to_integer()
+    seconds = max(reset_at - System.os_time(:second), 1)
+    IO.puts(:stderr, "Hex API rate limit reached, waiting #{seconds}s…")
+    Process.sleep(seconds * 1000)
+  end
+
+  defp ssl_options do
+    [
+      verify: :verify_peer,
+      cacerts: :public_key.cacerts_get(),
+      customize_hostname_check: [match_fun: :public_key.pkix_verify_hostname_match_fun(:https)]
+    ]
+  end
+end
+
+defmodule HexAuditPlan.Project do
+  @moduledoc "Reads the locked Hex dependencies of the current Mix project."
+
+  @doc "Returns `%{package => %{version, only, requirements: [{source, requirement}]}}`. A `source` of \"mix.exs\" means a direct dependency."
+  def hex_dependencies do
+    # hex.outdated exits with 1 when a package is outdated, so only the output matters.
+    {output, _exit_code} = System.cmd("mix", ["hex.outdated", "--all", "--json"])
+
+    case JSON.decode(output) do
+      {:ok, dependencies} when is_list(dependencies) -> Map.new(dependencies, &to_dependency/1)
+      _ -> raise "`mix hex.outdated --all --json` did not return JSON (is TENANT_KEY set?):\n#{output}"
+    end
+  end
+
+  defp to_dependency(dependency) do
+    requirements = Enum.map(dependency["requirements"], &{&1["source"], &1["requirement"]})
+    {dependency["package"], %{version: Version.parse!(dependency["lock_version"]), only: dependency["only"], requirements: requirements}}
+  end
+end
+
+defmodule HexAuditPlan.OSV do
+  @moduledoc "Finds vulnerable packages with one OSV batch request (avoids the Hex API rate limit)."
+
+  def vulnerable_packages(dependencies) do
+    dependencies = Enum.to_list(dependencies)
+    queries = Enum.map(dependencies, fn {name, dependency} -> %{package: %{name: name, ecosystem: "Hex"}, version: to_string(dependency.version)} end)
+    %{"results" => results} = HexAuditPlan.HTTP.post_json("https://api.osv.dev/v1/querybatch", %{queries: queries})
+
+    for {{name, _dependency}, result} <- Enum.zip(dependencies, results), result["vulns"] not in [nil, []], do: name
+  end
+end
+
+defmodule HexAuditPlan.Hex do
+  @moduledoc "Hex.pm API access, cached for the duration of the script."
+
+  @api "https://hex.pm/api"
+
+  def package(name), do: cached({:package, name}, fn -> HexAuditPlan.HTTP.get_json("#{@api}/packages/#{name}") end)
+
+  def release(name, version), do: cached({:release, name, version}, fn -> HexAuditPlan.HTTP.get_json("#{@api}/packages/#{name}/releases/#{version}") end)
+
+  @doc "Stable, non-retired versions released after `version`, oldest first."
+  def installable_versions_after(name, version) do
+    package = package(name)
+    retired = Map.keys(package["retirements"] || %{})
+
+    package["releases"]
+    |> Enum.map(& &1["version"])
+    |> Enum.reject(&(&1 in retired))
+    |> Enum.map(&Version.parse!/1)
+    |> Enum.filter(&(&1.pre == [] and Version.compare(&1, version) == :gt))
+    |> Enum.sort(Version)
+  end
+
+  def advisories(name) do
+    package(name)["security_advisories"] |> List.wrap() |> Enum.filter(&is_nil(&1["withdrawn_at"]))
+  end
+
+  @doc "Requirement of `parent` at `version` on `child`, or nil when the release does not depend on it."
+  def requirement_on(parent, version, child) do
+    get_in(release(parent, to_string(version)), ["requirements", child, "requirement"])
+  end
+
+  defp cached(key, fun) do
+    with nil <- Process.get(key) do
+      value = fun.()
+      Process.put(key, value)
+      value
+    end
+  end
+end
+
+defmodule HexAuditPlan.Planner do
+  @moduledoc "Finds the minimal safe version of a package and the upgrades needed to reach it."
+
+  alias HexAuditPlan.Hex
+
+  # Safe versions tried, oldest first, before giving up on an unblocked upgrade path.
+  @max_candidates 5
+
+  def plan(name, dependencies) do
+    dependency = dependencies[name]
+    later_versions = Hex.installable_versions_after(name, dependency.version)
+    all_advisories = Hex.advisories(name)
+
+    advisories =
+      all_advisories
+      |> Enum.filter(&affects?(&1, dependency.version))
+      |> Enum.map(&%{advisory: &1, fixed_in: Enum.find(later_versions, fn version -> not affects?(&1, version) end)})
+
+    unfixable_ids = for %{advisory: advisory, fixed_in: nil} <- advisories, do: advisory["id"]
+
+    # A safe version must also avoid advisories introduced after the current version.
+    safe_versions =
+      if length(unfixable_ids) < length(advisories),
+        do: Enum.filter(later_versions, fn version -> Enum.all?(all_advisories, &(&1["id"] in unfixable_ids or not affects?(&1, version))) end),
+        else: []
+
+    {target, steps} = choose_target(name, safe_versions, dependencies)
+
+    %{
+      package: name,
+      current: to_string(dependency.version),
+      only: dependency.only,
+      direct: Enum.any?(dependency.requirements, &match?({"mix.exs", _}, &1)),
+      target: target,
+      status: status(target, steps),
+      unfixed: unfixable_ids,
+      advisories: Enum.map(advisories, &format_advisory/1),
+      steps: steps,
+      commands: commands(steps)
+    }
+  end
+
+  # Takes the oldest safe version whose upgrade path is not blocked, else the oldest safe version.
+  defp choose_target(_name, [], _dependencies), do: {nil, []}
+
+  defp choose_target(name, safe_versions, dependencies) do
+    candidates = Enum.map(Enum.take(safe_versions, @max_candidates), &{&1, Enum.uniq(upgrade_steps(name, &1, dependencies, "fixes the advisories"))})
+    {version, steps} = Enum.find(candidates, hd(candidates), fn {_version, steps} -> not Enum.any?(steps, &(&1.action == "blocked")) end)
+    {to_string(version), steps}
+  end
+
+  defp affects?(advisory, version), do: Enum.any?(advisory["affected"], &Version.match?(version, &1))
+
+  defp upgrade_steps(name, version, dependencies, reason) do
+    blocking_steps =
+      for {source, requirement} <- dependencies[name].requirements, not Version.match?(version, requirement), reduce: [] do
+        steps when source == "mix.exs" -> steps ++ [%{action: "bump_mix_exs", package: name, version: to_string(version), reason: "mix.exs requires #{requirement}"}]
+        steps -> steps ++ parent_steps(source, name, version, requirement, dependencies)
+      end
+
+    blocking_steps ++ [%{action: "update", package: name, version: to_string(version), reason: reason}]
+  end
+
+  defp parent_steps(parent, child, child_version, requirement, dependencies) do
+    case dependencies[parent] do
+      nil ->
+        [%{action: "blocked", package: parent, version: nil, reason: "#{parent} is not a Hex package and requires #{child} #{requirement}; upgrade it manually"}]
+
+      %{version: current} ->
+        case first_release_accepting(parent, current, child, child_version) do
+          nil -> [%{action: "blocked", package: parent, version: nil, reason: "#{parent} requires #{child} #{requirement} and no #{parent} release accepts #{child_version}"}]
+          version -> upgrade_steps(parent, version, dependencies, "first #{parent} release accepting #{child} #{child_version} (#{parent} #{current} requires #{requirement})")
+        end
+    end
+  end
+
+  defp first_release_accepting(parent, current, child, child_version) do
+    parent
+    |> Hex.installable_versions_after(current)
+    |> Enum.find(fn version ->
+      requirement = Hex.requirement_on(parent, version, child)
+      is_nil(requirement) or Version.match?(child_version, requirement)
+    end)
+  end
+
+  defp status(nil, _steps), do: "no_fix"
+
+  defp status(_target, steps) do
+    cond do
+      Enum.any?(steps, &(&1.action == "blocked")) -> "blocked"
+      Enum.any?(steps, &(&1.action == "bump_mix_exs")) -> "mix_exs_bump"
+      Enum.count(steps, &(&1.action == "update")) > 1 -> "parent_upgrade"
+      true -> "deps_update"
+    end
+  end
+
+  defp commands(steps) do
+    edits = for %{action: "bump_mix_exs", package: package, version: version} <- steps, do: "# edit mix.exs: allow #{package} #{version}"
+    packages = for %{action: "update", package: package} <- steps, do: package
+
+    if packages == [] or Enum.any?(steps, &(&1.action == "blocked")),
+      do: edits,
+      else: edits ++ ["mix deps.update #{Enum.join(packages, " ")}", "mix hex.audit"]
+  end
+
+  defp format_advisory(%{advisory: advisory, fixed_in: fixed_in}) do
+    %{
+      id: advisory["id"],
+      aliases: advisory["aliases"],
+      rating: advisory["cvss_rating"],
+      summary: advisory["summary"],
+      affected: advisory["affected"],
+      fixed_in: fixed_in && to_string(fixed_in),
+      url: advisory["html_url"]
+    }
+  end
+end
+
+defmodule HexAuditPlan.CLI do
+  @moduledoc false
+
+  @ratings ~w(critical high medium low)
+
+  def main(argv) do
+    {options, only_packages} = OptionParser.parse!(argv, strict: [json: :boolean])
+
+    unless File.exists?("mix.exs") do
+      IO.puts(:stderr, "hex-audit-plan: no mix.exs in #{File.cwd!()}; run it from the root of a Mix project")
+      System.halt(1)
+    end
+
+    {:ok, _} = Application.ensure_all_started([:inets, :ssl])
+
+    dependencies = HexAuditPlan.Project.hex_dependencies()
+
+    plans =
+      dependencies
+      |> HexAuditPlan.OSV.vulnerable_packages()
+      |> Enum.filter(&(only_packages == [] or &1 in only_packages))
+      |> Enum.map(&HexAuditPlan.Planner.plan(&1, dependencies))
+      |> Enum.reject(&(&1.advisories == []))
+      |> Enum.sort_by(&{severity_rank(&1), &1.package})
+
+    if options[:json], do: IO.puts(JSON.encode!(plans)), else: Enum.each(plans, &print_plan/1)
+  end
+
+  defp severity_rank(plan), do: plan.advisories |> Enum.map(&Enum.find_index(@ratings, fn rating -> rating == &1.rating end)) |> Enum.min(fn -> 99 end)
+
+  defp print_plan(plan) do
+    kind = if plan.direct, do: "direct", else: "transitive"
+    only = if plan.only in [nil, ""], do: "", else: ", only: #{plan.only}"
+
+    unfixed = if plan.target && plan.unfixed != [], do: " — #{length(plan.unfixed)} advisory(ies) without fix", else: ""
+
+    IO.puts(IO.ANSI.format([:bright, "#{plan.package} #{plan.current} → #{plan.target || "no fix"}", :reset, " (#{kind}#{only}) [#{plan.status}]#{unfixed}"]))
+
+    for advisory <- plan.advisories do
+      IO.puts("  - #{advisory.id} (#{advisory.rating}) fixed in #{advisory.fixed_in || "none"}: #{advisory.summary}")
+    end
+
+    for step <- plan.steps, do: IO.puts("  * #{step.action} #{Enum.join(Enum.reject([step.package, step.version], &is_nil/1), " ")}: #{step.reason}")
+    for command <- plan.commands, do: IO.puts("  $ #{command}")
+    IO.puts("")
+  end
+end
+
+HexAuditPlan.CLI.main(System.argv())
