@@ -3,7 +3,14 @@
 #
 # Usage (from the root of any Mix project; requires Elixir >= 1.18 for the JSON module):
 #
-#     hex-audit-plan [--json] [package ...]
+#     hex-audit-plan                          # plans every vulnerable package
+#     hex-audit-plan package ...              # plans the given packages
+#     hex-audit-plan --next                   # plans only the most severe package with an unblocked fix
+#     hex-audit-plan --next --include-blocked # plans only the most severe package with a fix, blocked or not
+#
+# Prints a JSON object: `unfixable` (no fixed version exists) first, then `fixable`, each sorted most severe first.
+# With --next, prints the plan of a single package (or null when no package matches).
+# The JSON is colored when the output is a terminal, and plain when it is piped (e.g. to jq).
 #
 # Projects that need env variables at compile time (e.g. TENANT_KEY) must load them first:
 #
@@ -147,8 +154,8 @@ defmodule HexAuditPlan.Planner do
     all_advisories = Hex.advisories(name)
 
     advisories =
-      all_advisories
-      |> Enum.filter(&affects?(&1, dependency.version))
+      name
+      |> advisories_affecting(dependency.version)
       |> Enum.map(&%{advisory: &1, fixed_in: Enum.find(later_versions, fn version -> not affects?(&1, version) end)})
 
     unfixable_ids = for %{advisory: advisory, fixed_in: nil} <- advisories, do: advisory["id"]
@@ -164,16 +171,16 @@ defmodule HexAuditPlan.Planner do
     %{
       package: name,
       current: to_string(dependency.version),
-      only: dependency.only,
       direct: Enum.any?(dependency.requirements, &match?({"mix.exs", _}, &1)),
       target: target,
       status: status(target, steps),
-      unfixed: unfixable_ids,
-      advisories: Enum.map(advisories, &format_advisory/1),
+      advisories: Enum.map(advisories, &%{rating: &1.advisory["cvss_rating"], url: &1.advisory["html_url"]}),
       steps: steps,
       commands: commands(steps)
     }
   end
+
+  def advisories_affecting(name, version), do: Enum.filter(Hex.advisories(name), &affects?(&1, version))
 
   # Takes the oldest safe version whose upgrade path is not blocked, else the oldest safe version.
   defp choose_target(_name, [], _dependencies), do: {nil, []}
@@ -235,19 +242,7 @@ defmodule HexAuditPlan.Planner do
 
     if packages == [] or Enum.any?(steps, &(&1.action == "blocked")),
       do: edits,
-      else: edits ++ ["mix deps.update #{Enum.join(packages, " ")}", "mix hex.audit"]
-  end
-
-  defp format_advisory(%{advisory: advisory, fixed_in: fixed_in}) do
-    %{
-      id: advisory["id"],
-      aliases: advisory["aliases"],
-      rating: advisory["cvss_rating"],
-      summary: advisory["summary"],
-      affected: advisory["affected"],
-      fixed_in: fixed_in && to_string(fixed_in),
-      url: advisory["html_url"]
-    }
+      else: edits ++ ["mix deps.update #{Enum.join(packages, " ")}"]
   end
 end
 
@@ -257,7 +252,12 @@ defmodule HexAuditPlan.CLI do
   @ratings ~w(critical high medium low)
 
   def main(argv) do
-    {options, only_packages} = OptionParser.parse!(argv, strict: [json: :boolean])
+    {options, only_packages} = OptionParser.parse!(argv, strict: [next: :boolean, include_blocked: :boolean])
+
+    if options[:include_blocked] && !options[:next] do
+      IO.puts(:stderr, "hex-audit-plan: --include-blocked requires --next")
+      System.halt(1)
+    end
 
     unless File.exists?("mix.exs") do
       IO.puts(:stderr, "hex-audit-plan: no mix.exs in #{File.cwd!()}; run it from the root of a Mix project")
@@ -268,35 +268,86 @@ defmodule HexAuditPlan.CLI do
 
     dependencies = HexAuditPlan.Project.hex_dependencies()
 
-    plans =
+    # Ranking needs only the advisories; the expensive upgrade path search runs on the selected packages.
+    ranked_packages =
       dependencies
       |> HexAuditPlan.OSV.vulnerable_packages()
       |> Enum.filter(&(only_packages == [] or &1 in only_packages))
+      |> Enum.map(&{&1, HexAuditPlan.Planner.advisories_affecting(&1, dependencies[&1].version)})
+      |> Enum.reject(fn {_package, advisories} -> advisories == [] end)
+      |> Enum.sort_by(fn {package, advisories} -> {severity_rank(advisories), package} end)
+      |> Enum.map(fn {package, _advisories} -> package end)
+
+    output =
+      if options[:next],
+        do: next_plan(ranked_packages, dependencies, options[:include_blocked]),
+        else: all_plans(ranked_packages, dependencies)
+
+    output
+    |> HexAuditPlan.PrettyJSON.encode()
+    |> IO.puts()
+  end
+
+  defp all_plans(packages, dependencies) do
+    {fixable, unfixable} =
+      packages
       |> Enum.map(&HexAuditPlan.Planner.plan(&1, dependencies))
-      |> Enum.reject(&(&1.advisories == []))
-      |> Enum.sort_by(&{severity_rank(&1), &1.package})
+      |> Enum.split_with(& &1.target)
 
-    if options[:json], do: IO.puts(JSON.encode!(plans)), else: Enum.each(plans, &print_plan/1)
+    [unfixable: Enum.map(unfixable, &output_fields/1), fixable: Enum.map(fixable, &output_fields/1)]
   end
 
-  defp severity_rank(plan), do: plan.advisories |> Enum.map(&Enum.find_index(@ratings, fn rating -> rating == &1.rating end)) |> Enum.min(fn -> 99 end)
+  # Plans the packages one at a time, most severe first, and stops at the first that matches.
+  defp next_plan(packages, dependencies, include_blocked?) do
+    plan =
+      packages
+      |> Stream.map(&HexAuditPlan.Planner.plan(&1, dependencies))
+      |> Enum.find(&(&1.status != "no_fix" and (include_blocked? or &1.status != "blocked")))
 
-  defp print_plan(plan) do
-    kind = if plan.direct, do: "direct", else: "transitive"
-    only = if plan.only in [nil, ""], do: "", else: ", only: #{plan.only}"
-
-    unfixed = if plan.target && plan.unfixed != [], do: " — #{length(plan.unfixed)} advisory(ies) without fix", else: ""
-
-    IO.puts(IO.ANSI.format([:bright, "#{plan.package} #{plan.current} → #{plan.target || "no fix"}", :reset, " (#{kind}#{only}) [#{plan.status}]#{unfixed}"]))
-
-    for advisory <- plan.advisories do
-      IO.puts("  - #{advisory.id} (#{advisory.rating}) fixed in #{advisory.fixed_in || "none"}: #{advisory.summary}")
-    end
-
-    for step <- plan.steps, do: IO.puts("  * #{step.action} #{Enum.join(Enum.reject([step.package, step.version], &is_nil/1), " ")}: #{step.reason}")
-    for command <- plan.commands, do: IO.puts("  $ #{command}")
-    IO.puts("")
+    plan && output_fields(plan)
   end
+
+  defp output_fields(plan) do
+    [
+      package: plan.package,
+      status: plan.status,
+      current: plan.current,
+      target: plan.target,
+      commands: plan.commands,
+      advisories: Enum.map(plan.advisories, &"#{&1.rating} (#{&1.url})"),
+      direct: plan.direct
+    ]
+  end
+
+  defp severity_rank(advisories), do: advisories |> Enum.map(&(Enum.find_index(@ratings, fn rating -> rating == &1["cvss_rating"] end) || 99)) |> Enum.min()
+end
+
+defmodule HexAuditPlan.PrettyJSON do
+  @moduledoc """
+  Pretty-prints JSON like jq: indented, and colored when ANSI is enabled (the output is a terminal).
+  Keyword lists become objects that keep their key order (maps do not).
+  """
+
+  def encode(value, color? \\ IO.ANSI.enabled?()), do: value |> encode(color?, "") |> IO.chardata_to_string()
+
+  defp encode([], _color?, _indent), do: "[]"
+
+  defp encode([{key, _} | _] = object, color?, indent) when is_atom(key) do
+    inner = indent <> "  "
+    fields = Enum.map_intersperse(object, ",\n", fn {key, value} -> [inner, paint([:blue, :bright], to_string(key), color?), ": ", encode(value, color?, inner)] end)
+    ["{\n", fields, "\n", indent, "}"]
+  end
+
+  defp encode(list, color?, indent) when is_list(list) do
+    inner = indent <> "  "
+    ["[\n", Enum.map_intersperse(list, ",\n", &[inner, encode(&1, color?, inner)]), "\n", indent, "]"]
+  end
+
+  defp encode(value, color?, _indent) when is_binary(value), do: paint(:green, value, color?)
+  defp encode(nil, color?, _indent), do: IO.ANSI.format([:light_black, "null"], color?)
+  defp encode(value, color?, _indent), do: IO.ANSI.format([:yellow, JSON.encode!(value)], color?)
+
+  defp paint(format, string, color?), do: IO.ANSI.format([format, JSON.encode!(string)], color?)
 end
 
 HexAuditPlan.CLI.main(System.argv())
