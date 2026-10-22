@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "1.3.0",
+  "lastChangelogVersion": "1.4.0",
   "defaultProvider": "forra",
-  "defaultModel": "claude-opus-5-5",
-  "defaultThinkingLevel": "high",
+  "defaultModel": "gpt-6.1-sol",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": false,
   "theme": "dark",
   "packages": [
@@ -20,3 +20,4 @@
   "treeFilterMode": "default",
   "tuiMode": "regular"
 }
+
