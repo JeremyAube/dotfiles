@@ -2,7 +2,7 @@
 name: planner
 description: Creates implementation plans from context and requirements
 tools: read, grep, find, ls
-model: forra/claude-sonnet-5-5
+model: forra/gpt-6.1-sol
 thinking: high
 ---
 
