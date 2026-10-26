@@ -156,6 +156,8 @@ interface SingleResult {
 	stopReason?: string;
 	errorMessage?: string;
 	step?: number;
+	sessionFile?: string;
+	lastAction?: string;
 }
 
 interface SubagentDetails {
@@ -169,9 +171,8 @@ function getFinalOutput(messages: Message[]): string {
 	for (let i = messages.length - 1; i >= 0; i--) {
 		const msg = messages[i];
 		if (msg.role === "assistant") {
-			for (const part of msg.content) {
-				if (part.type === "text") return part.text;
-			}
+			const text = msg.content.filter((part) => part.type === "text").map((part) => part.text).join("\n");
+			if (text.trim()) return text;
 		}
 	}
 	return "";
@@ -215,10 +216,17 @@ function isFailedResult(result: SingleResult): boolean {
 }
 
 function getResultOutput(result: SingleResult): string {
-	if (isFailedResult(result)) {
-		return result.errorMessage || result.stderr || getFinalOutput(result.messages) || "(no output)";
-	}
-	return getFinalOutput(result.messages) || "(no output)";
+	const output = getFinalOutput(result.messages);
+	const session = result.sessionFile ? `\nSaved session: ${result.sessionFile}` : "";
+	if (!isFailedResult(result)) return (output || "(no output)") + session;
+
+	const parts = [result.errorMessage || result.stderr || `Process exited with code ${result.exitCode}.`];
+	parts.push(`Reported usage: ${formatUsageStats(result.usage, result.model) || "none"}. Usage from an interrupted response can be missing.`);
+	if (result.lastAction) parts.push(`Last action: ${result.lastAction}`);
+	if (output) parts.push(`Last assistant text (partial work, not a verified result):\n${truncateParallelOutput(output)}`);
+	parts.push(`Files can already be changed. Inspect the saved session and current files before you retry. Do not restart the full task automatically.${session}`);
+	if (result.sessionFile) parts.push(`To resume: pi --session '${result.sessionFile.replace(/'/g, "'\\''")}'`);
+	return parts.join("\n\n");
 }
 
 function truncateParallelOutput(output: string): string {
@@ -328,7 +336,7 @@ async function runSingleAgent(
 		};
 	}
 
-	const args: string[] = ["--mode", "json", "-p", "--no-session"];
+	const args: string[] = ["--mode", "json", "-p"];
 	const inheritsDispatchConfig = !agent.model;
 	const model = agent.model ?? dispatchDefaults.model;
 	if (model) args.push("--model", model);
@@ -362,6 +370,18 @@ async function runSingleAgent(
 	};
 
 	try {
+		if (signal?.aborted) {
+			currentResult.exitCode = 1;
+			currentResult.stopReason = "aborted";
+			currentResult.errorMessage = "Subagent was cancelled before it started.";
+			return currentResult;
+		}
+		const sessionRoot = path.join(getAgentDir(), "subagent-sessions");
+		await fs.promises.mkdir(sessionRoot, { recursive: true, mode: 0o700 });
+		const runDir = await fs.promises.mkdtemp(path.join(sessionRoot, "run-"));
+		currentResult.sessionFile = path.join(runDir, "session.jsonl");
+		args.push("--session", currentResult.sessionFile);
+		emitUpdate();
 		if (agent.systemPrompt.trim()) {
 			const tmp = await writePromptToTempFile(agent.name, agent.systemPrompt);
 			tmpPromptDir = tmp.dir;
@@ -380,6 +400,13 @@ async function runSingleAgent(
 				stdio: ["ignore", "pipe", "pipe"],
 			});
 			let buffer = "";
+			let killTimer: ReturnType<typeof setTimeout> | undefined;
+			const killProc = () => {
+				wasAborted = true;
+				proc.kill("SIGTERM");
+				// proc.killed means a signal was sent, not that the process exited.
+				killTimer = setTimeout(() => proc.kill("SIGKILL"), 5000);
+			};
 
 			const processLine = (line: string) => {
 				if (!line.trim()) return;
@@ -387,7 +414,17 @@ async function runSingleAgent(
 				try {
 					event = JSON.parse(line);
 				} catch {
+					currentResult.stderr += "Invalid JSON record in child stdout.\n";
 					return;
+				}
+				if (!event || typeof event !== "object") return;
+				if (event.type === "tool_execution_start") {
+					currentResult.lastAction = `${event.toolName} ${JSON.stringify(event.args ?? {}).slice(0, 1000)}`;
+					emitUpdate();
+				}
+				if (event.type === "tool_execution_end") {
+					currentResult.lastAction = `${event.toolName} ${event.isError ? "failed" : "completed"} (call ${event.toolCallId})`;
+					emitUpdate();
 				}
 
 				if (event.type === "message_end" && event.message) {
@@ -407,7 +444,7 @@ async function runSingleAgent(
 						}
 						if (!currentResult.model && msg.model) currentResult.model = msg.model;
 						if (msg.stopReason) currentResult.stopReason = msg.stopReason;
-						if (msg.errorMessage) currentResult.errorMessage = msg.errorMessage;
+						currentResult.errorMessage = msg.errorMessage;
 					}
 					emitUpdate();
 				}
@@ -418,8 +455,9 @@ async function runSingleAgent(
 				}
 			};
 
-			proc.stdout.on("data", (data) => {
-				buffer += data.toString();
+			proc.stdout.setEncoding("utf8");
+			proc.stdout.on("data", (data: string) => {
+				buffer += data;
 				const lines = buffer.split("\n");
 				buffer = lines.pop() || "";
 				for (const line of lines) processLine(line);
@@ -429,30 +467,40 @@ async function runSingleAgent(
 				currentResult.stderr += data.toString();
 			});
 
-			proc.on("close", (code) => {
+			proc.on("close", (code, exitSignal) => {
+				if (killTimer) clearTimeout(killTimer);
+				signal?.removeEventListener("abort", killProc);
 				if (buffer.trim()) processLine(buffer);
-				resolve(code ?? 0);
+				if (exitSignal && !wasAborted) currentResult.errorMessage = `Child process ended with ${exitSignal}.`;
+				resolve(code ?? 1);
 			});
 
-			proc.on("error", () => {
-				resolve(1);
+			proc.on("error", (error) => {
+				currentResult.errorMessage = error.message;
 			});
 
-			if (signal) {
-				const killProc = () => {
-					wasAborted = true;
-					proc.kill("SIGTERM");
-					setTimeout(() => {
-						if (!proc.killed) proc.kill("SIGKILL");
-					}, 5000);
-				};
-				if (signal.aborted) killProc();
-				else signal.addEventListener("abort", killProc, { once: true });
-			}
+			if (signal?.aborted) killProc();
+			else signal?.addEventListener("abort", killProc, { once: true });
 		});
 
 		currentResult.exitCode = exitCode;
-		if (wasAborted) throw new Error("Subagent was aborted");
+		if (wasAborted) {
+			currentResult.stopReason = "aborted";
+			currentResult.errorMessage = "Subagent was cancelled. Partial work is preserved.";
+		} else if (
+			!isFailedResult(currentResult) &&
+			(!["stop", "end"].includes(currentResult.stopReason ?? "") ||
+				!getFinalOutput(currentResult.messages.filter((msg) => msg.role === "assistant").slice(-1)))
+		) {
+			currentResult.stopReason = "error";
+			currentResult.errorMessage = "Child process ended without a complete final answer.";
+		}
+		emitUpdate();
+		return currentResult;
+	} catch (error) {
+		currentResult.exitCode = 1;
+		currentResult.stopReason = "error";
+		currentResult.errorMessage = error instanceof Error ? error.message : String(error);
 		return currentResult;
 	} finally {
 		if (tmpPromptPath)
@@ -506,6 +554,7 @@ export default function (pi: ExtensionAPI) {
 		description: [
 			"Delegate tasks to specialized subagents with isolated context.",
 			"Modes: single (agent + task), parallel (tasks array), chain (sequential with {previous} placeholder).",
+			"Child sessions are saved. On failure, inspect the saved session and current file changes before retrying; do not restart the full task automatically.",
 			`Default agent scope is "user" (from ${path.join(getAgentDir(), "agents")}).`,
 			`To enable project-local agents in ${CONFIG_DIR_NAME}/agents, set agentScope: "both" (or "project").`,
 		].join(" "),
@@ -628,7 +677,7 @@ export default function (pi: ExtensionAPI) {
 					previousOutput = getFinalOutput(result.messages);
 				}
 				return {
-					content: [{ type: "text", text: getFinalOutput(results[results.length - 1].messages) || "(no output)" }],
+					content: [{ type: "text", text: getResultOutput(results[results.length - 1]) }],
 					details: makeDetails("chain")(results),
 					usage: sumSubagentUsage(results),
 				};
@@ -716,6 +765,7 @@ export default function (pi: ExtensionAPI) {
 					],
 					details: makeDetails("parallel")(results),
 					usage: sumSubagentUsage(results),
+					isError: successCount !== results.length,
 				};
 			}
 
@@ -743,7 +793,7 @@ export default function (pi: ExtensionAPI) {
 					};
 				}
 				return {
-					content: [{ type: "text", text: getFinalOutput(result.messages) || "(no output)" }],
+					content: [{ type: "text", text: getResultOutput(result) }],
 					details: makeDetails("single")([result]),
 					usage: sumSubagentUsage([result]),
 				};
@@ -830,7 +880,7 @@ export default function (pi: ExtensionAPI) {
 				const isError = isFailedResult(r);
 				const icon = isError ? theme.fg("error", "✗") : theme.fg("success", "✓");
 				const displayItems = getDisplayItems(r.messages);
-				const finalOutput = getFinalOutput(r.messages);
+				const finalOutput = getResultOutput(r);
 
 				if (expanded) {
 					const container = new Container();
@@ -872,7 +922,7 @@ export default function (pi: ExtensionAPI) {
 
 				let text = `${icon} ${theme.fg("toolTitle", theme.bold(r.agent))}${theme.fg("muted", ` (${r.agentSource})`)}`;
 				if (isError && r.stopReason) text += ` ${theme.fg("error", `[${r.stopReason}]`)}`;
-				if (isError && r.errorMessage) text += `\n${theme.fg("error", `Error: ${r.errorMessage}`)}`;
+				if (isError) text += `\n${theme.fg("error", getResultOutput(r))}`;
 				else if (displayItems.length === 0) text += `\n${theme.fg("muted", "(no output)")}`;
 				else {
 					text += `\n${renderDisplayItems(displayItems, COLLAPSED_ITEM_COUNT)}`;
@@ -880,6 +930,7 @@ export default function (pi: ExtensionAPI) {
 				}
 				const usageStr = formatUsageStats(r.usage, r.model);
 				if (usageStr) text += `\n${theme.fg("dim", usageStr)}`;
+				if (!isError && r.sessionFile) text += `\n${theme.fg("dim", `Saved session: ${r.sessionFile}`)}`;
 				return new Text(text, 0, 0);
 			}
 
@@ -897,7 +948,7 @@ export default function (pi: ExtensionAPI) {
 			};
 
 			if (details.mode === "chain") {
-				const successCount = details.results.filter((r) => r.exitCode === 0).length;
+				const successCount = details.results.filter((r) => !isFailedResult(r)).length;
 				const icon = successCount === details.results.length ? theme.fg("success", "✓") : theme.fg("error", "✗");
 
 				if (expanded) {
@@ -914,9 +965,9 @@ export default function (pi: ExtensionAPI) {
 					);
 
 					for (const r of details.results) {
-						const rIcon = r.exitCode === 0 ? theme.fg("success", "✓") : theme.fg("error", "✗");
+						const rIcon = !isFailedResult(r) ? theme.fg("success", "✓") : theme.fg("error", "✗");
 						const displayItems = getDisplayItems(r.messages);
-						const finalOutput = getFinalOutput(r.messages);
+						const finalOutput = getResultOutput(r);
 
 						container.addChild(new Spacer(1));
 						container.addChild(
@@ -966,11 +1017,13 @@ export default function (pi: ExtensionAPI) {
 					theme.fg("toolTitle", theme.bold("chain ")) +
 					theme.fg("accent", `${successCount}/${details.results.length} steps`);
 				for (const r of details.results) {
-					const rIcon = r.exitCode === 0 ? theme.fg("success", "✓") : theme.fg("error", "✗");
+					const rIcon = !isFailedResult(r) ? theme.fg("success", "✓") : theme.fg("error", "✗");
 					const displayItems = getDisplayItems(r.messages);
 					text += `\n\n${theme.fg("muted", `─── Step ${r.step}: `)}${theme.fg("accent", r.agent)} ${rIcon}`;
-					if (displayItems.length === 0) text += `\n${theme.fg("muted", "(no output)")}`;
+					if (isFailedResult(r)) text += `\n${theme.fg("error", getResultOutput(r))}`;
+					else if (displayItems.length === 0) text += `\n${theme.fg("muted", "(no output)")}`;
 					else text += `\n${renderDisplayItems(displayItems, 5)}`;
+					if (!isFailedResult(r) && r.sessionFile) text += `\n${theme.fg("dim", `Saved session: ${r.sessionFile}`)}`;
 				}
 				const usageStr = formatUsageStats(aggregateUsage(details.results));
 				if (usageStr) text += `\n\n${theme.fg("dim", `Total: ${usageStr}`)}`;
@@ -1005,7 +1058,7 @@ export default function (pi: ExtensionAPI) {
 					for (const r of details.results) {
 						const rIcon = isFailedResult(r) ? theme.fg("error", "✗") : theme.fg("success", "✓");
 						const displayItems = getDisplayItems(r.messages);
-						const finalOutput = getFinalOutput(r.messages);
+						const finalOutput = getResultOutput(r);
 
 						container.addChild(new Spacer(1));
 						container.addChild(
@@ -1055,9 +1108,11 @@ export default function (pi: ExtensionAPI) {
 								: theme.fg("success", "✓");
 					const displayItems = getDisplayItems(r.messages);
 					text += `\n\n${theme.fg("muted", "─── ")}${theme.fg("accent", r.agent)} ${rIcon}`;
-					if (displayItems.length === 0)
+					if (r.exitCode !== -1 && isFailedResult(r)) text += `\n${theme.fg("error", getResultOutput(r))}`;
+					else if (displayItems.length === 0)
 						text += `\n${theme.fg("muted", r.exitCode === -1 ? "(running...)" : "(no output)")}`;
 					else text += `\n${renderDisplayItems(displayItems, 5)}`;
+					if (!isFailedResult(r) && r.sessionFile) text += `\n${theme.fg("dim", `Saved session: ${r.sessionFile}`)}`;
 				}
 				if (!isRunning) {
 					const usageStr = formatUsageStats(aggregateUsage(details.results));
