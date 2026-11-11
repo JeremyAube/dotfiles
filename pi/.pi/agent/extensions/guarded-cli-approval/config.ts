@@ -1,3 +1,16 @@
+/**
+ * Exact executable and argument words. A final "*" allows zero or more arguments.
+ * These rules do not apply to executable name variants or wrapper scripts.
+ */
+export const ALLOWED_CLI_COMMANDS: string[][] = [
+  ["gh", "pr", "view", "*"],
+  ["gh", "pr", "list", "*"],
+  ["gh", "pr", "diff", "*"],
+  ["gh", "run", "view", "*"],
+  ["gh", "run", "watch", "*"],
+  ["gh", "run", "list", "*"],
+];
+
 export interface GuardedCliFamily {
   label: string;
   patterns: RegExp[];

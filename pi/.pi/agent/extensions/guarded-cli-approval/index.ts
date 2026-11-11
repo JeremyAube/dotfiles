@@ -1,6 +1,6 @@
 import { basename } from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
-import { GUARDED_CLI_FAMILIES, type GuardedCliFamily } from "./config";
+import { ALLOWED_CLI_COMMANDS, GUARDED_CLI_FAMILIES, type GuardedCliFamily } from "./config";
 
 const SHELL_COMMANDS = new Set(["sh", "bash", "zsh", "fish", "dash", "ksh"]);
 const WRAPPER_COMMANDS = new Set(["sudo", "env", "command", "builtin", "nohup", "nice", "time"]);
@@ -157,10 +157,16 @@ function findShellInlineCommand(tokens: string[], commandIndex: number): string 
 	return undefined;
 }
 
-function extractExecutableNames(command: string, depth = 0): string[] {
+interface CliInvocation {
+	executable: string;
+	words: string[];
+	allowlistEligible: boolean;
+}
+
+function extractInvocations(command: string, depth = 0): CliInvocation[] {
 	if (depth > 2) return [];
 
-	const names = new Set<string>();
+	const invocations: CliInvocation[] = [];
 
 	for (const segment of splitCommandSegments(command)) {
 		const tokens = tokenizeShellWords(segment);
@@ -182,25 +188,45 @@ function extractExecutableNames(command: string, depth = 0): string[] {
 		}
 
 		if (!commandName) continue;
-		names.add(commandName);
+		invocations.push({
+			executable: commandName,
+			words: [basename(tokens[commandIndex]), ...tokens.slice(commandIndex + 1)],
+			// Do not grant exceptions to substitutions, redirections, or shell groups.
+			// The existing detector is a simple parser, not a shell security boundary.
+			allowlistEligible: !/[$`<>()]/.test(segment),
+		});
 
 		if (SHELL_COMMANDS.has(commandName)) {
 			const inlineCommand = findShellInlineCommand(tokens, commandIndex);
 			if (inlineCommand) {
-				for (const nestedName of extractExecutableNames(inlineCommand, depth + 1)) {
-					names.add(nestedName);
-				}
+				invocations.push(...extractInvocations(inlineCommand, depth + 1));
 			}
 		}
 	}
 
-	return [...names];
+	return invocations;
+}
+
+function isAllowedInvocation(invocation: CliInvocation): boolean {
+	if (!invocation.allowlistEligible) return false;
+
+	return ALLOWED_CLI_COMMANDS.some((rule) => {
+		const hasWildcard = rule.at(-1) === "*";
+		const prefix = hasWildcard ? rule.slice(0, -1) : rule;
+		if (prefix.length === 0) return false;
+		if (hasWildcard ? invocation.words.length < prefix.length : invocation.words.length !== prefix.length) {
+			return false;
+		}
+		return prefix.every((word, index) => word === invocation.words[index]);
+	});
 }
 
 function findGuardMatches(command: string): GuardMatch[] {
 	const matches = new Map<string, GuardMatch>();
 
-	for (const executable of extractExecutableNames(command)) {
+	for (const invocation of extractInvocations(command)) {
+		if (isAllowedInvocation(invocation)) continue;
+		const { executable } = invocation;
 		for (const family of GUARDED_CLI_FAMILIES) {
 			if (!family.patterns.some((pattern) => pattern.test(executable))) continue;
 			matches.set(`${family.label}:${executable}`, { family, executable });
