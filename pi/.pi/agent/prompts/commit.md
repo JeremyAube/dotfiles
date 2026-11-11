@@ -17,15 +17,15 @@ Common argument patterns:
 
 - `type` REQUIRED. Use `feat` for new features, `fix` for bug fixes. Other common types: `docs`, `refactor`, `chore`, `test`, `perf`.
 - `scope` OPTIONAL. Short noun in parentheses for the affected area (e.g., `api`, `parser`, `ui`).
-- `summary` REQUIRED. Short, imperative, <= 72 chars, no trailing period.
+- `summary` REQUIRED. Short, imperative, <= 50 chars, no trailing period.
 
 ## Notes
 
-- Body is OPTIONAL. If needed, add a blank line after the subject and write short paragraphs.
-- Do NOT include breaking-change markers or footers.
+- add a blank line after the subject and write short paragraphs.
 - Do NOT add sign-offs (no `Signed-off-by`).
 - Only commit; do NOT push.
 - If it is unclear whether a file should be included, ask me which files to commit.
+- Unless you have really special information to share that I must know, reply with only the commit message
 
 ## Steps
 
