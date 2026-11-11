@@ -1,4 +1,0 @@
-#!/bin/bash
-
-mise upgrade npm:@earendil-works/pi-coding-agent
-ai update --extensions
