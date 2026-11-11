@@ -13,6 +13,8 @@ source $HOME/.config/zsh/dotnet.sh
 
 # Programs
 source <(fzf --zsh)
+export PATH="/Users/jeremy/.local/share/goi/bin:$PATH"
 
 # Private Vars
 [[ -f $HOME/.private.env ]] && source $HOME/.private.env
+
