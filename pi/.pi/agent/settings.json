@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "1.5.2",
   "defaultProvider": "forra",
-  "defaultModel": "gemini-4-argon",
+  "defaultModel": "claude-sonnet-5-5",
   "defaultThinkingLevel": "medium",
   "hideThinkingBlock": false,
   "theme": "dark",
@@ -29,4 +29,3 @@
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0"
   }
 }
-
