@@ -2,6 +2,7 @@
 1password-cli = "latest"
 acli = "latest"
 ansible-core = "latest"
+aube = "latest"
 aws-cli = { version = "latest", symlink_bins = "true" }
 awsebcli = "latest"
 azure-cli = { version = "latest", uvx_args = "--prerelease=allow" }
