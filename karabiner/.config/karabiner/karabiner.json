@@ -177,7 +177,7 @@
                                     "key_code": "c",
                                     "modifiers": { "optional": ["any"] }
                                 },
-                                "to": [{ "shell_command": "open -a 'Rex Beta.app'" }],
+                                "to": [{ "shell_command": "open -a 'Rex.app'" }],
                                 "type": "basic"
                             },
                             {
