@@ -9,6 +9,8 @@ export const ALLOWED_CLI_COMMANDS: string[][] = [
   ["gh", "run", "view", "*"],
   ["gh", "run", "watch", "*"],
   ["gh", "run", "list", "*"],
+  ["az", "boards", "work-item", "show", "*"],
+  ["az", "account", "show", "*"],
 ];
 
 export interface GuardedCliFamily {

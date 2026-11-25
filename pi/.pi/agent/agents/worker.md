@@ -2,7 +2,7 @@
 name: worker
 description: Implements one specific, well-described task end to end
 tools: read, grep, find, ls, bash, edit, write
-model: forra/azure-glm-5.3
+model: forra/deepseek-v4.1-flash-1017
 thinking: high
 ---
 
