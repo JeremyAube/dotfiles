@@ -26,3 +26,14 @@ vim.keymap.set("n", "<leader>tq", ":tabclose<CR>", { desc = "Close current tab" 
 vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "Open a new tab" })
 vim.keymap.set("n", "<leader>tl", ":tabnext<CR>", { desc = "Open a new tab" })
 vim.keymap.set("n", "<leader>th", ":tabprev<CR>", { desc = "Open a new tab" })
+
+-- ========= Rex + Pi ==================
+vim.keymap.set({ "n", "v" }, "<leader>pn", function()
+	require("rex_pi").new_split()
+end, { desc = "Open Pi in a new Rex split with selection" })
+vim.keymap.set({ "n", "v" }, "<leader>ps", function()
+	require("rex_pi").pick_and_send()
+end, { desc = "Send selection to an open Pi session in Rex" })
+vim.keymap.set({ "n", "v" }, "<leader>pl", function()
+	require("rex_pi").send_to_last()
+end, { desc = "Send selection to last Pi session in Rex" })
